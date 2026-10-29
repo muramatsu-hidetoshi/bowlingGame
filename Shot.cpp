@@ -57,16 +57,8 @@ static float g_ChargeRatio = 0.0f;   // 0～1
 static float g_ChargeDir = 1.0f;   // +1 or -1
 static constexpr float CHARGE_SPEED = 1.5f; // 往復スピード
 static float g_UIBlinkTime = 0.0f; // MAX時点滅用
-// 現在の投球パワーを取得する。
-float Shot_GetPower()
-{
-    return g_Power;
-}
-// ボールが投げられた状態かを取得する。
-bool Shot_IsFired()
-{
-    return g_State == ShotState::Fired;
-}
+
+
 // 投球方向とパワーから、投球速度ベクトルを求める。
 XMFLOAT3 Shot_GetShotVelocity()
 {
@@ -248,10 +240,7 @@ void Shot_Draw()
 
 
 
-const XMFLOAT3& Shot_GetVelocity()
-{
-    return g_Front;
-}
+
 
 void Shot_SetPosition(const XMFLOAT3& position)
 {
@@ -265,10 +254,7 @@ float Shot_GetChargeRatio()
 
 
 
-bool Shot_IsCharging()
-{
-    return g_IsCharging;
-}
+
 
 // チャージ率に応じた円形ゲージと数値を表示する。
 void Shot_DrawUI()

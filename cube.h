@@ -21,7 +21,6 @@ void Cube_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 void Cube_Finalize();
 
 // 立方体の状態を更新する
-void Cube_Update(double elapsedTime);
 
 // 指定されたワールド行列とテクスチャIDを使用して立方体を描画する
 void Cube_Draw(const DirectX::XMMATRIX& mtxWorld, int texid);

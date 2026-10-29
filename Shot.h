@@ -26,7 +26,6 @@ enum class ShotState
     Aim,        // ñÓàÛÇ™ç∂âEÇ…óhÇÍÇÈ
     Fired
 };
-bool Shot_IsFired();
 DirectX::XMFLOAT3 Shot_GetShotVelocity();
 static ShotState g_State = ShotState::Charge;
 
@@ -35,12 +34,9 @@ void Shot_Finalize();
 void Shot_Update(double et);
 void Shot_Draw();
 
-const DirectX::XMFLOAT3& Shot_GetVelocity();
 void Shot_SetPosition(const DirectX::XMFLOAT3& position);
-float Shot_GetPower();
 void Shot_ResetPower();
 float Clamp(float v, float minV, float maxV);
 float Shot_GetChargeRatio();
-bool  Shot_IsCharging();
 void Shot_DrawUI();
 bool Shot_ConsumeFire();

@@ -213,10 +213,7 @@ int PinManager::GetRemainingPinCount() const
 
 // 初期ピン数を取得する。
 // 現在は10本固定で返す。
-int PinManager::GetInitialPinCount() const
-{
-    return 10;
-}
+
 
 // 指定位置を先頭ピンとして、10本のピンを三角形状に配置する。
 void PinManager::SetupBowlingPins(const XMFLOAT3& headPinPos)
@@ -255,19 +252,7 @@ void PinManager::ResetPins()
 }
 
 // 倒れたピンと死亡扱いのピンの合計数を取得する。
-int PinManager::GetDownPinCount() const
-{
-    int down = 0;
 
-    for (const auto& p : m_pins)
-    {
-        // 倒れたピン、または死亡扱いのピンをカウントする。
-        if (p.IsDown() || p.IsDead())
-            down++;
-    }
-
-    return down;
-}
 
 // 現在のピンをすべて削除し、初期位置に再配置する。
 // ボウリングの1フレームが終了したときなどに使用する。

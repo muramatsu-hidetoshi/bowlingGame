@@ -22,7 +22,6 @@ static constexpr float POLIGON_WIDTH = 0.1f;
 static ID3D11Buffer* g_pVertexBuffer = NULL;
 
 // 現在使用しているテクスチャID
-static int g_Texture = -1;
 
 // トレイルの位置履歴
 static XMFLOAT3 g_PositionBuffer[POSITION_COUNT_MAX]{};

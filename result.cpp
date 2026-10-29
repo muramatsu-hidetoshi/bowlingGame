@@ -16,7 +16,6 @@
 #include <DirectXMath.h>
 #include "scene.h"
 #include "algorithm"
-#include "player.h"
 #include "scoreBoard.h"
 
 static int g_WaitTime = 1.0;
@@ -36,8 +35,6 @@ static double g_keyInputWaitTime = 0.0;
 static int g_Digit = 6;
 static int g_Dx = 600;
 static int g_Dy = 400;
-static int g_DigitWidth = 32;
-static int g_DigitHeight = 40;
 
 // 数字を描画する関数
 void DrawNumber(int x, int y, int number);
@@ -132,7 +129,6 @@ void Result_Update(double elapsed_time)
 void Result_Draw()
 {
     // プレイヤーとスコア情報を取得する
-    Player* p = GetPlayer();
     Score* s = GetScore();
 
     // 背景を画面全体に描画する

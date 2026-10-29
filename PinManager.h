@@ -31,9 +31,6 @@ public:
     // ピンを初期配置に戻す。
     void ResetPins();
 
-    // 倒れたピンと死亡扱いのピンの数を取得する。
-    int GetDownPinCount() const;
-
     // 指定位置に新しいピンを追加する。
     void AddPin(const DirectX::XMFLOAT3& pos);
 
@@ -42,9 +39,6 @@ public:
 
     // 死亡扱いではないピンの数を取得する。
     int GetRemainingPinCount() const;
-
-    // 初期ピン数を取得する。
-    int GetInitialPinCount() const;
 
     // 死亡扱いのピンを画面外へ移動させる。
     void RemoveDeadPins();

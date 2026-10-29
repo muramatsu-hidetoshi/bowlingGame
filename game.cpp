@@ -15,27 +15,19 @@
 #include "game.h"
 #include "game_bg.h"
 #include "grid.h"
-#include "game_score.h"
 #include "lighth.h"
 #include "keylogger.h"
 #include "map.h"
 #include "debug.h"
 #include "camera.h"
 #include "gameeffect.h"
-#include "texture.h"
-#include "player.h"
 
 #include "direct3d.h"
 #include "scene.h"
 #include "timer.h"
-#include "ball.h"
-#include "sprite_anim.h"
 
-#include "model.h";
 #include "shot.h"
 #include "billBord.h"
-#include "sprite_anim.h"
-#include "shotCamera.h"
 #include "camera_fixed.h"
 #include "trail.h"
 #include "bowlingBall.h"
@@ -54,33 +46,14 @@
 using namespace DirectX;
 
 // カメラとゲーム進行に関する管理変数
-static Camera* g_a[2];
-static bool g_Start = false;
-static int g_BgmId = -1; // BGMのID
-static bool g_NextChlick = false;
-static AnimPattern* g_pTestAnim = nullptr;
-static float g_SelectedX = 0.0f;
-static float g_SelectedY = 0.0f;
-static float g_LimitTime = 0.0f;
-static int Cube01tex = -1;
-static AnimPatternPlayer* g_pAnimPlayer{ nullptr };
 
 // newで生成し、deleteで解放するデバッグカメラ
 static DebugCamera* g_pDebugCamera{};
-static FixedCamera* g_FixedCameras[3];
+static FixedCamera* g_FixedCameras[2];
 static DirectionCamera* g_pDirectionCamera{};
 static int g_FixedCameraIndex{ 0 };
 
-// モデルとアニメーションの管理
-static MODEL* g_pKirby;
-static MODEL* g_pPenis;
-static AnimPattern* g_pTestAnim2 = nullptr;
-static AnimPatternPlayer* g_pAnimPlayer2{ nullptr };
-static ShotCamera* g_pShotCamera{ nullptr };
-
 // テクスチャIDと投球回数の管理
-static int g_texid = -1;
-static int g_texid2 = -1;
 static int g_ShotCount = 0;
 static constexpr int MAX_SHOT = 2;
 
@@ -91,13 +64,8 @@ static const XMFLOAT3 Point_Of_Fixation = { 5.f, 5.0f, 5.0f };
 // ボールが投球中かどうかを管理
 static bool g_BallInPlay = false;
 
-// ゴール判定用の当たり判定と状態
-static AABB g_GoalAABB;
-static bool g_IsGoal = false;
-
 // ボウリングボールとピンの管理
 BowlingBall g_BowlingBall;
-static int g_PrevDownPinCount = 0;
 static float g_PinSettleTimer = 0.0f;
 
 // ピンが倒れきるまで待つ時間
@@ -107,7 +75,6 @@ static bool g_WaitingPinSettle = false;
 // フレーム数と投球前のピンの状態を管理
 static int g_FrameCount = 0;
 static constexpr int MAX_FRAME = 4;
-static int g_PrevDownPinsThisThrow = 0;
 
 // 投球前に残っていたピン数。
 // 投球後に残ったピン数との差から、倒したピン数を算出する。
@@ -121,10 +88,6 @@ float GameClamp(float v, float minV, float maxV);
 // ゲーム開始時に必要なオブジェクトとシステムを初期化する
 void Game_Initialize()
 {
-    // ゴール判定に使用するAABBを生成する
-    g_GoalAABB = AABB::Make(
-        { float(1.0f), 0.9f, float(1.0f) },
-        { 1, 1, 1 });
 
     // デバッグ描画機能を初期化する
     DebugDraw_Initialize();
@@ -137,11 +100,6 @@ void Game_Initialize()
     g_pDebugCamera = new DebugCamera(
         { a },
         { 0.0f, 0.0f, 0.0f });
-
-    g_pShotCamera = new ShotCamera(
-        { 0.0f, 0.0f, 50.0f },
-        { 2.0f, 1.0f, 2.0f },
-        2.0f);
 
     g_pDirectionCamera = new DirectionCamera(
         { a },
@@ -170,39 +128,25 @@ void Game_Initialize()
     Shot_Initialize(a, g_pDebugCamera->GetFront());
 
     // スコア表示、軌跡、UIを初期化する
-    Score_Initialize(100, 100, 2);
     Trail_Initialize();
     UI::Initialize();
 
     // エフェクト用テクスチャを読み込む
-    g_texid = Texture_Load(L"rom\\Texture\\gra_effect_lightA.png");
 
     // ピンを初期配置する
     g_Pinmanager.Initialize();
 
-    // テスト用アニメーションと再生プレイヤーを生成する
-    g_pTestAnim = new AnimPattern(
-        g_texid, 10, 5, 0.1, { 0, 0 }, { 140, 200 });
-
-    g_pAnimPlayer = new AnimPatternPlayer(g_pTestAnim);
-
     // 投球回数などの管理変数を初期化する
     g_FrameCount = 0;
     g_ShotCount = 0;
-    g_PrevDownPinCount = 0;
 
     // 爆発エフェクトを初期化する
     TrailExplosion_Initialize();
 }
 
-// ゲーム開始からの経過時間
-static double g_time{ 0.0 };
-
 // ゲーム中の各システムを更新する
 void Game_Update(double elapsed_time)
 {
-    // ゲーム全体の経過時間を加算する
-    g_time += elapsed_time;
 
     // ボールの移動とショット位置、UIを更新する
     g_BowlingBall.Update(elapsed_time);
@@ -211,13 +155,13 @@ void Game_Update(double elapsed_time)
 
     // ショット、軌跡、ビルボードを更新する
     Shot_Update(elapsed_time);
-    Trail_AddPosition(Ball_GetPosition());
+    Trail_AddPosition(g_BowlingBall.GetPosition());
     Billboard_Update(elapsed_time);
 
     // ボールの位置を基準に、固定カメラの注視対象を更新する
     for (int i = 0; i < 2; i++)
     {
-        g_FixedCameras[i]->SetTarget(Ball_GetPosition());
+        g_FixedCameras[i]->SetTarget(g_BowlingBall.GetPosition());
 
         // カメラの判定範囲に入っていたら、そのカメラを選択する
         if (g_FixedCameras[i]->IsOverlap())
@@ -236,7 +180,6 @@ void Game_Update(double elapsed_time)
 
     // 爆発エフェクトとスコアを更新する
     TrailExplosion_Update(elapsed_time);
-    Score_Update();
 
     // Rキーでピンをリセットする
     if (KeyLogger_IsPressed(KK_R))
@@ -257,7 +200,6 @@ void Game_Update(double elapsed_time)
     if (!g_BallInPlay && fired)
     {
         // 投球前に倒れているピン数と残っているピン数を記録する
-        g_PrevDownPinsThisThrow = g_Pinmanager.GetDownPinCount();
         g_PrevRemainingPinsThisThrow =
             g_Pinmanager.GetRemainingPinCount();
 
@@ -302,7 +244,6 @@ void Game_Update(double elapsed_time)
             g_ShotCount++;
 
             // 投球後に倒れたピンを取得し、倒れたピンを削除する
-            int nowDown = g_Pinmanager.GetDownPinCount();
             g_Pinmanager.RemoveDeadPins();
 
             // 投球前後の残存ピン数の差から、倒れたピン数を算出する
@@ -353,7 +294,6 @@ void Game_Update(double elapsed_time)
             {
                 // ピンを再配置し、フレーム関連の状態を更新する
                 g_Pinmanager.DestroyAndRecreatePins();
-                g_PrevDownPinCount = 0;
                 g_ShotCount = 0;
                 g_FrameCount++;
 
@@ -369,32 +309,6 @@ void Game_Update(double elapsed_time)
 
     // ピンとボールの相互作用を更新する
     g_Pinmanager.Update(elapsed_time, g_BowlingBall);
-
-    // ボールとゴールの当たり判定を行う
-    Hit hit = g_GoalAABB.IsHit(Ball_GetAABB());
-
-    // ゴールに接触した場合、ゴール演出を有効にする
-    if (hit.IsHit())
-    {
-        g_IsGoal = true;
-    }
-
-    // アニメーションプレイヤーを更新する
-    g_pAnimPlayer->Update(elapsed_time);
-
-    // 追加アニメーションが存在する場合は更新し、再生終了後に解放する
-    if (g_pAnimPlayer2)
-    {
-        g_pAnimPlayer2->Update(elapsed_time);
-
-        if (g_pAnimPlayer2->IsAnimStopeed())
-        {
-            delete g_pAnimPlayer2;
-            delete g_pTestAnim2;
-
-            g_pAnimPlayer2 = nullptr;
-        }
-    }
 
     // パーティクルエフェクトを更新する
     // AuraEffect_Update(elapsed_time);
@@ -444,33 +358,15 @@ void Game_Draw()
     Shot_DrawUI();
     ScoreBoard_Draw();
     UI::Draw();
-
-    // ゴール状態が有効なら、ゴール位置にアニメーションを表示する
-    if (g_IsGoal)
-    {
-        XMFLOAT3 pos = g_GoalAABB.GetCenter();
-        pos.y += 5.0f;
-
-        if (g_pAnimPlayer2)
-        {
-            g_pAnimPlayer2->BillboardDraw(
-                { pos }, { 1.4, 2.0 }, { 0, 0 });
-        }
-    }
 }
 
 // ゲーム終了時に、確保したオブジェクトや各システムのリソースを解放する
 void Game_Finalize()
 {
-    // 動的に生成したアニメーションとカメラを解放する
-    delete g_pTestAnim;
     delete g_pDebugCamera;
-    delete g_pShotCamera;
 
     // モデルと各描画・演出システムを終了する
-    ModelRelease(g_pKirby);
     DebugDraw_Finalize();
-    Ball_Finalize();
     Map_Finalize();
     Gulid_Finalize();
     Light_Finalize();

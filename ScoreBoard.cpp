@@ -94,26 +94,10 @@ void ScoreBoard_Initialize()
 }
 
 
-// 記号画像の縦方向の開始位置を取得する
-float GetSymbolSrcY(int symbol)
-{
-    if (symbol <= DIGIT_9)
-        return 0.0f; // 数字の行
-    else if (symbol <= SYMBOL_SPARE)
-        return CELL_H_NUM * 2; // X・スペア記号の行
-    else
-        return CELL_H_NUM * 2; // 空白の行
-}
 
 
-// 記号画像の高さを取得する
-float GetSymbolHeight(int symbol)
-{
-    if (symbol <= DIGIT_9)
-        return CELL_H_NUM;
 
-    return CELL_H_SYM;
-}
+
 
 
 // 数字画像から指定した記号を切り出して描画する
@@ -260,11 +244,7 @@ void Score_AddThrow(int pins)
 }
 
 
-// フレームごとの得点を再計算する
-// ※現状は未実装
-void Score_Recalculate()
-{
-}
+
 
 
 // スコアボードと各フレームの投球結果を描画する

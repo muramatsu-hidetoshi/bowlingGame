@@ -124,10 +124,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 		hInstance,
 		nullptr);
 
-	float angle = 0.0f;
-	float x = 0.0f;
-	float y = 0.0f;
-
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -268,30 +264,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 					xv.wLeftMotorSpeed = 65535; // 左モーターの振動速度
 					xv.wRightMotorSpeed = 65535; // 右モーターの振動速度
 					XInputSetState(0, &xv); // コントローラーの状態を取得
-				}
-
-				if (KeyLogger_IsPressed(KK_D)) {
-
-					x += (float)(200.0f * elapsed_time); // 右に移動
-
-				}
-				if (KeyLogger_IsPressed(KK_A)) {
-
-					x -= (float)(200.0f * elapsed_time); // 右に移動
-
-				}
-				if (KeyLogger_IsPressed(KK_W)) {
-
-					y -= (float)(200.0f * elapsed_time); // 右に移動
-
-				}
-				if (KeyLogger_IsPressed(KK_S)) {
-
-					y += (float)(200.0f * elapsed_time); // 右に移動
-
-				}
-				if (KeyLogger_IsPressed(KK_P)) {
-					angle += (float)(100.0f * elapsed_time); // 角度を更新（ラジアン単位）
 				}
 
 

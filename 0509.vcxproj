@@ -142,7 +142,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="audio.cpp" />
-    <ClCompile Include="ball.cpp" />
     <ClCompile Include="billBord.cpp" />
     <ClCompile Include="bowlingBall.cpp" />
     <ClCompile Include="camera.cpp" />
@@ -159,7 +158,6 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameeffect.cpp" />
     <ClCompile Include="gameOver.cpp" />
-    <ClCompile Include="game_score.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="keylogger.cpp" />
@@ -172,7 +170,6 @@
     <ClCompile Include="particleEffect.cpp" />
     <ClCompile Include="pinManager.cpp" />
     <ClCompile Include="pins.cpp" />
-    <ClCompile Include="player.cpp" />
     <ClCompile Include="polygon.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="scene.cpp" />
@@ -195,7 +192,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="audio.h" />
-    <ClInclude Include="ball.h" />
     <ClInclude Include="billBord.h" />
     <ClInclude Include="bowlingBall.h" />
     <ClInclude Include="camera.h" />
@@ -225,9 +221,7 @@
     <ClInclude Include="particleEffect.h" />
     <ClInclude Include="pinManager.h" />
     <ClInclude Include="pins.h" />
-    <ClInclude Include="player.h" />
     <ClInclude Include="polygon.h" />
-    <ClInclude Include="game_score.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scoreBoard.h" />

@@ -36,15 +36,12 @@ public:
 Score* GetScore();
 void ScoreSet(int);
 void Score_AddThrow(int pins);
-void Score_Recalculate();
 
 // スコアボードの初期化と描画
 void ScoreBoard_Draw();
 void ScoreBoard_Initialize();
 
 // 数字画像内の描画位置や高さを取得する
-float GetSymbolSrcY(int symbol);
-float GetSymbolHeight(int symbol);
 
 // 指定した数字・記号を描画する
 void DrawSymbol(

@@ -183,12 +183,6 @@ void Cube_Finalize()
 }
 
 
-// 立方体の更新処理
-void Cube_Update(double elapsedTime)
-{
-    // 現在は更新処理を行っていない
-    // 回転やアニメーションなどを追加する場合はここに記述する
-}
 
 
 // 立方体を描画する
