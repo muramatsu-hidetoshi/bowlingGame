@@ -1,9 +1,9 @@
 /*==========================================================================
 
 	ゲーム全体の初期化／更新／描画／終了処理を管理 [game.cpp]
-	
 
-													Author : hidetoshi muramatu
+
+
 ---------------------------------------------------------------------------
 
 
@@ -105,6 +105,7 @@ PinManager g_Pinmanager;
 float GameClamp(float v, float minV, float maxV);
 void Game_Initialize()
 {
+    // ゲームオブジェクトと各描画・入力システムを初期化する。
 	g_GoalAABB = AABB::Make({ float(1.0f), 0.9f, float(1.0f) }, { 1,1,1 });
 	DebugDraw_Initialize();
 	XMFLOAT3 a = BALL_START_POS;
@@ -122,7 +123,7 @@ void Game_Initialize()
 	Gulid_Initialize(10,10,1);
 	Map_Initialize();
 	Light_Initialize();
-	
+
 	a.z += 20;
 	hal::dout << a.z;
 	Shot_Initialize(a,g_pDebugCamera->GetFront());
@@ -142,11 +143,12 @@ void Game_Initialize()
 	g_PrevDownPinCount = 0;
 
 	TrailExplosion_Initialize();
-	
+
 }
 static double g_time{ 0.0 };
 void Game_Update(double elapsed_time)
 {
+    // 投球、ピン、スコア、演出を経過時間に合わせて更新する。
 	g_time += elapsed_time;
 
 
@@ -154,9 +156,9 @@ void Game_Update(double elapsed_time)
 	Shot_SetPosition(g_BowlingBall.GetPosition()); //  追加
 	UI::Update(elapsed_time);
 
-	
+
 	Shot_Update(elapsed_time);
-	
+
 	Trail_AddPosition(Ball_GetPosition());
 	Billboard_Update(elapsed_time);
 	for (int i = 0; i < 2; i++)
@@ -175,7 +177,7 @@ void Game_Update(double elapsed_time)
 	TrailExplosion_SetCameraPosition(g_pDebugCamera->GetPosition());
  // 爆発更新
 	TrailExplosion_Update(elapsed_time);
-	
+
 	Score_Update();
 	if (KeyLogger_IsPressed(KK_R))
 	{
@@ -185,10 +187,10 @@ void Game_Update(double elapsed_time)
 	{
 		Scene_SetNextScene(SCENE_RESULT);
 	}
-	
-	
 
-	
+
+
+
 	bool fired = Shot_ConsumeFire();
 
 	if (!g_BallInPlay && fired)
@@ -198,7 +200,7 @@ void Game_Update(double elapsed_time)
 		// 追加: 投球直前の「残っているピン数」も記録しておく（削除を踏まえた差分算出用）
 		g_PrevRemainingPinsThisThrow = g_Pinmanager.GetRemainingPinCount();
 
-	
+
 		g_BowlingBall.AddForce(Shot_GetShotVelocity());
 		Shot_ResetPower();
 		g_BallInPlay = true;
@@ -246,7 +248,7 @@ void Game_Update(double elapsed_time)
 			bool isSpare = (fallenPins > 0 && remainingAfterRemove == 0 && g_ShotCount == 2);
 			bool isGutter = (fallenPins == 0);
 
-			
+
 
 			// UI通知を表示
 			if (isStrike)
@@ -263,7 +265,7 @@ void Game_Update(double elapsed_time)
 			{
 				UI::ShowNotification(UI::NotificationType::GUTTER);
 			}
-			
+
 			// 
 
 			Score_AddThrow(fallenPins);
@@ -311,12 +313,13 @@ void Game_Update(double elapsed_time)
 
 	//AuraEffect_Update(elapsed_time);
 	ParticleEffect_Update(elapsed_time);
-	
-	
+
+
 }
 
 void Game_Draw()
 {
+    // 現在のゲーム状態に応じて3Dオブジェクトと画面UIを描画する。
 
 	Direct3D_SetDepthTest(true);
 	if (g_BallInPlay)
@@ -329,8 +332,8 @@ void Game_Draw()
 	}
 
 	Billboard_SetViewMatrix(g_pDebugCamera->GetViewMatrix());
-	
-	
+
+
 	g_BowlingBall.Draw();
 	g_Pinmanager.Draw();
 
@@ -340,16 +343,16 @@ void Game_Draw()
 	XMStoreFloat3(&direction, { -1.0f,-1.5f,1.0f });
 	Light_SetDiffuse({ 0.5f,0.5f,0.5f }, direction);
 
-	
+
 		Shot_Draw();
-		
-
-
-	
 
 
 
-	
+
+
+
+
+
 	Map_Draw();
 	TrailExplosion_Draw();
 	//2D描画はここに
@@ -358,7 +361,7 @@ void Game_Draw()
 	ScoreBoard_Draw();
 	UI::Draw();
 
-	
+
 	if(g_IsGoal)
 	{
 		XMFLOAT3 pos = g_GoalAABB.GetCenter();
@@ -374,6 +377,7 @@ void Game_Draw()
 
 void Game_Finalize()
 {
+    // ゲーム中に確保したモデルや各システムのリソースを解放する。
 	delete g_pTestAnim;
 	delete g_pDebugCamera;
 	delete g_pShotCamera;

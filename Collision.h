@@ -3,8 +3,7 @@
 “–‚½‚è”»’è[collision.h]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/11/18
+
 ---------------------------------------------------------------------------
 
 
@@ -109,8 +108,8 @@ public:
 
 	const DirectX::XMFLOAT3& GetPositin()const { return m_pos; }
 
-	
-	
+
+
 
 	bool IsOverlap(const AABB& aabb) const override {
 		return aabb.IsOverlap(*this);

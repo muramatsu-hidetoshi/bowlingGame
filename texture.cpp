@@ -3,8 +3,7 @@
 
 テクスチャの管理[texture.cpp]
 
-												Author : hidetoshi muramatu
-												Date   : 2025/06/06
+
 ---------------------------------------------------------------------------
 
 
@@ -41,6 +40,7 @@ static ID3D11DeviceContext* g_pContext = nullptr;
 
 void Texture_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+    // テクスチャ管理で使うDirect3Dデバイスとコンテキストを保持する。
 
 
 	// デバイスとデバイスコンテキストの保存
@@ -52,11 +52,13 @@ void Texture_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 void Texture_Finalize()
 {
+    // 登録されているテクスチャを解放して管理状態を終了する。
 	Texture_AllRelease();
 }
 
 int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 {
+    // 画像を読み込み、必要に応じてミップマップを生成して管理配列へ登録する。
 
 	//すでに読みこんでいたファイル対応
 	for (int i = 0; i < TEXTURE_MAX; i++) {
@@ -75,7 +77,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 
 	//管理処理
 	for (int i = 0; i < TEXTURE_MAX; i++) {
-		
+
 		//空いている場所を探す
 		if (g_Textures[i].pTexture) continue;
 
@@ -110,7 +112,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 			metadata = image.GetMetadata();
 
 		}
-		
+
 
 
 		//シェーダーリソースビューの作成
@@ -129,7 +131,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 	}
 
 
-	
+
 	return -1;
 }
 
@@ -147,7 +149,7 @@ void Tecture_SetTexture(int texture_id)
 {
 
 	if (texture_id < 0) {
-		
+
 		return;
 	}
 
@@ -162,9 +164,9 @@ void Tecture_SetTexture(int texture_id)
 
 DirectX::XMUINT2 Texture_GetSize(int texture_id)
 {
-	
+
 	return { g_Textures[texture_id].width,g_Textures[texture_id].height };
-	
+
 }
 
 

@@ -1,11 +1,11 @@
 
 /*==========================================================================
 テールの描画や計算など[trail.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -55,6 +55,7 @@ void Trail_Finalize()
 
 void Trail_Draw()
 {
+    // 記録した移動位置を結んでボールの軌跡を描画する。
 	if (!g_IsEnabled) return;
 
 	D3D11_MAPPED_SUBRESOURCE msr;
@@ -122,6 +123,7 @@ void Trail_Draw()
 
 void Trail_AddPosition(const DirectX::XMFLOAT3& position)
 {
+    // ボールの現在位置を軌跡バッファへ追加し、古い点を順に押し出す。
 	for (int i = 0; i < POSITION_COUNT_MAX - 1; i++)
 	{
 		g_PositionBuffer[i] = g_PositionBuffer[i + 1];
@@ -152,6 +154,7 @@ void Trail_SetEnabled(bool enabled)
 
 void Trail_Clear()
 {
+    // 保存中の軌跡点を消去して次の投球に備える。
 	for (int i = 0; i < POSITION_COUNT_MAX; i++)
 	{
 		g_PositionBuffer[i] = XMFLOAT3(0, 0, 0);

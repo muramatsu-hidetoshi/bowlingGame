@@ -3,8 +3,6 @@
  DX11の機能　[direct3d.cpp]
 
 
-												Author : 
-												Date   : 2025/04/21
 ---------------------------------------------------------------------------
 
 
@@ -65,6 +63,7 @@ static void releaseBackBuffer();
 
 bool Direct3D_Initialize(HWND hWnd)
 {
+    // デバイスとスワップチェーンを作成し、画面描画に必要な状態を準備する。
 	DXGI_SWAP_CHAIN_DESC swap_chain_desc{};
 	swap_chain_desc.Windowed = TRUE;
 	swap_chain_desc.BufferCount = 2;
@@ -187,7 +186,7 @@ bool Direct3D_Initialize(HWND hWnd)
 
 void Direct3D_Finalize()
 {
-	
+
 	SAFE_RELEASE(g_pDepthStencilStateDepthWriteEnable);
 	SAFE_RELEASE(g_pDepthStencilStateDepthEnable);
 	SAFE_RELEASE(g_pDepthStencilStateDepthDisable);
@@ -223,6 +222,7 @@ void Direct3D_Finalize()
 
 void Direct3D_Clear()
 {
+    // フレーム開始時にバックバッファと深度バッファを初期化する。
 	if (!g_pDeviceContext || !g_pRenderTargetView) {
 		hal::dout << "DeviceContext or RenderTargetView is null!";
 		return;
@@ -237,6 +237,7 @@ void Direct3D_Clear()
 
 void Direct3D_Present()
 {
+    // 描画済みのバックバッファを画面へ提示する。
 	g_pSwapChain->Present(1, 0);//左を1に戻す
 }
 
@@ -380,7 +381,7 @@ bool configureBackBuffer()
 	g_Viewport.Height = (FLOAT)g_BackBufferDesc.Height;
 	g_Viewport.MinDepth = 0.0f;
 	g_Viewport.MaxDepth = 1.0f;
-	
+
 
 	/*g_Viewport[0].TopLeftX = 0.0f;
 	g_Viewport[0].TopLeftY = 0.0f;
@@ -421,7 +422,7 @@ void releaseBackBuffer()
 		g_pDepthStencilView->Release();
 		g_pDepthStencilView = nullptr;
 	}
-	
+
 	if (g_BlendStateMultiply)
 	{
 		g_BlendStateMultiply->Release();

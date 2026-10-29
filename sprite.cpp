@@ -2,8 +2,6 @@
 
 スプライト描画[sprite.cpp]
 
-												Author : 
-												Date   : 2025/06/06
 ---------------------------------------------------------------------------
 
 
@@ -48,6 +46,7 @@ struct Vertex
 
 void Sprite_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+    // スプライト描画に使う頂点・インデックスバッファを作成する。
 	// デバイスとデバイスコンテキストのチェック
 	if (!pDevice || !pContext) {
 		hal::dout << "Polygon_Initialize() : 与えられたデバイスかコンテキストが不正です";
@@ -72,6 +71,7 @@ void Sprite_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 void Sprite_Finalize(void)
 {
+    // スプライト描画用のDirect3Dリソースを解放する。
 	// リソースの解放
 
 	SAFE_RELEASE(g_pVertexBuffer);
@@ -80,6 +80,7 @@ void Sprite_Finalize(void)
 
 void Sprite_Draw(int texid, float x, float y, float w, float h, float scrollX, float scrollY, DirectX::XMFLOAT4 color)
 {
+    // 表示位置とサイズ、UV範囲を指定してスプライトを描画する。
 	// シェーダーを描画パイプラインに設定
 	Shader_Begin();
 
@@ -96,7 +97,7 @@ void Sprite_Draw(int texid, float x, float y, float w, float h, float scrollX, f
 	// 頂点情報を書き込み
 	const float SCREEN_WIDTH = (float)Direct3D_GetBackBufferWidth();
 	const float SCREEN_HEIGHT = (float)Direct3D_GetBackBufferHeight();
-	
+
 
 	static  float b = 0.0f; // 角度をラジアンで指定
 
@@ -203,7 +204,7 @@ void Sprite_Draw(int texid, float x, float y, float width, float height, int tx,
 	Vertex* v = (Vertex*)msr.pData;
 
 
-	
+
 
 	// 頂点情報を書き込み
 	const float SCREEN_WIDTH = (float)Direct3D_GetBackBufferWidth();
@@ -225,8 +226,8 @@ void Sprite_Draw(int texid, float x, float y, float width, float height, int tx,
 	v[3].position = { x + width, y + height, 0.0f };
 
 
-	
-	
+
+
 
 	// 頂点色を設定
 	v[0].color = color; // 赤
@@ -404,7 +405,7 @@ void Sprite_Draw(int texid, float angle, float x, float y, float width, float he
 	//Shader_SetWorldMatrix(XMMatrixIdentity());
 
 
-	
+
 
 	//Shader_SetWorldMatrix(XMMatrixIdentity());
 	// 頂点シェーダーに変換行列を設定

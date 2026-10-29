@@ -1,10 +1,10 @@
 /*==========================================================================
 ピンの処理[pins.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -36,6 +36,7 @@ Pins::Pins()
 
 void Pins::Initialize(const XMFLOAT3& pos)
 {
+    // ピンの初期位置、当たり判定、モデルを設定する。
     m_position = pos;
     m_rotation = { 0,0,0 };
     m_velocity = { 0,0,0 };
@@ -46,7 +47,7 @@ void Pins::Initialize(const XMFLOAT3& pos)
     m_isHit = false;
     m_aliveTime = 0.0f;
     m_lifeTimer = 0.0f;
-    
+
     m_model = ModelLoad("rom\\Model\\Pin.fbx", 0.9);
     m_baseHalf = { 1.5f, 3.f, 1.5f };
 
@@ -58,6 +59,7 @@ void Pins::Initialize(const XMFLOAT3& pos)
 
 void Pins::Update(float deltaTime)
 {
+    // 速度と重力を反映し、接地や停止を含むピンの物理状態を更新する。
     if (m_isDead) {
         // 死亡扱いなら物理更新を止める（オフスクリーンに移動済み）
         // ただし AABB は位置に合わせて更新しておく
@@ -149,6 +151,7 @@ void Pins::Update(float deltaTime)
 
 void Pins::Draw()
 {
+    // ピンの姿勢行列を作り、3Dモデルを描画する。
     if (m_isDead) {
         // オフスクリーンに移動済みなら描画しない
         return;
@@ -173,6 +176,7 @@ void Pins::Draw()
 
 void Pins::Hit(const XMFLOAT3& impulse, const XMFLOAT3& hitPoint)
 {
+    // 衝突インパルスと作用点から、ピンの移動・回転状態を更新する。
     if (!m_isHit)
     {
         m_isHit = true;
@@ -196,13 +200,13 @@ void Pins::Hit(const XMFLOAT3& impulse, const XMFLOAT3& hitPoint)
     m_angularVelocity.z += t.z * 3.f;
 
 
-  
 
-    
-      
-    
 
-    
+
+
+
+
+
 
 }
 

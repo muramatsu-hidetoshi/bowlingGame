@@ -2,8 +2,7 @@
 
 スコアの管理と表示[game_score.cpp]
 
-												Author : hidetoshi muramatu
-												Date   : 2025/09/05
+
 ---------------------------------------------------------------------------
 
 
@@ -41,7 +40,7 @@ void Score_Initialize(float x, float y, int digit)
 		g_CountStopValue *= 10;
 	}
 	g_CountStopValue --;
-	
+
 }
 
 void Score_Update()
@@ -60,15 +59,15 @@ void Score_Draw()
 	//g_Score%10;
 	for (int i = 0; i < g_Digit; i++)
 	{
-		
+
 		int dd = g_Digit - 1 - i;
 		int n = temp % 10;
 		numberDraw( g_Dx + 32 * dd,g_Dy,n);
 		temp /= 10;
 	}
 	Sprite_Draw(g_ScoreTexId1, 0, 350, 250, 128);
-	
-	
+
+
 }
 
 void Score_Finalize()

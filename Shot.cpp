@@ -1,11 +1,11 @@
 ﻿
 /*==========================================================================
 ボウリングの投球操作（ショット制御）を管理[shot.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -100,7 +100,7 @@ void Shot_Initialize(const XMFLOAT3& position, const XMFLOAT3& front)
     g_Model = ModelLoad("rom\\Model\\yajirushi.fbx", 0.1f);
     g_PowerBarTex = Texture_Load(L"rom/white_8x8.png");
     g_IsCharging = true;
-    
+
     //GetCursorPos(&g_PrevMousePos);
     // ===== DebugText 初期化 =====
     g_DebugText = new hal::DebugText(
@@ -136,7 +136,7 @@ void Shot_Update(double et)
         // Pキーでチャージ開始
         if (KeyLogger_IsTrigger(KK_P) && !g_IsCharging)
         {
-            
+
             g_ChargeRatio = 0.0f;
             g_ChargeDir = 1.0f;
         }
@@ -215,7 +215,7 @@ float Clamp(float v, float minV, float maxV)
 }
 void Shot_Draw()
 {
-   
+
     if (g_State != ShotState::Aim)
         return;
 

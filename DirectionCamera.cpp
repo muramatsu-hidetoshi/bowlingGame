@@ -1,10 +1,10 @@
 /*==========================================================================
 演出用カメラ[directionCamera.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -50,6 +50,7 @@ DirectionCamera::DirectionCamera(
 
 void DirectionCamera::Update(double elapsed_time)
 {
+    // ボールの移動に合わせて追従位置と注視点を更新する。
 
     const float MOVESPEED = 5.0f * static_cast<float>(elapsed_time);
     const float ROTSPEED = XMConvertToRadians(60.0f) * static_cast<float>(elapsed_time);
@@ -58,7 +59,7 @@ void DirectionCamera::Update(double elapsed_time)
     XMVECTOR xright = XMLoadFloat3(&m_right);
     XMVECTOR xup = XMLoadFloat3(&m_up);
     XMVECTOR xposition = XMLoadFloat3(&GetPosition());
-    
+
 
     // --- ターゲットに向かってズーム ---
     XMVECTOR xtarget = XMLoadFloat3(&m_Target);
@@ -148,7 +149,7 @@ void DirectionCamera::Update(double elapsed_time)
     //    xposition -= xup * MOVESPEED;
     //}
 
-  
+
 
     // 値をメンバに戻す
     XMStoreFloat3(&GetPositionReference(), xposition);

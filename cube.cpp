@@ -1,10 +1,10 @@
 ﻿/*==========================================================================
 単純な3Dの四角形の実装 [cube.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -52,7 +52,7 @@ struct Vertex3d
 	XMFLOAT3 normal;   // 法線
 	XMFLOAT4 color;    // 頂点色
 	XMFLOAT2 texcoord; // テクスチャ座標（必要なら追加）
-	
+
 };
 
 
@@ -119,6 +119,7 @@ static unsigned short g_CubeIndex[] =
 
 void Cube_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+    // 立方体の頂点・インデックスデータを作成し、Direct3Dバッファへ登録する。
 	//Cube01tex = Texture_Load(L"rom\\saikoro_image.png");
 
 
@@ -148,12 +149,12 @@ void Cube_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	g_pDevice->CreateBuffer(&bd, &sd, &g_pVertexBuffer);
 
 
-	
-	
+
+
 	bd.ByteWidth = sizeof(unsigned short) * NUM_INDEX;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-	
+
 	sd.pSysMem = g_CubeIndex;
 	g_pDevice->CreateBuffer(&bd, &sd, &g_pIndexBuffer);
 
@@ -219,6 +220,7 @@ void Cube_Update(double elapsedTime)
 //}
 void Cube_Draw(const XMMATRIX& mtxWorld,int texid)
 {
+    // 頂点とインデックスを描画パイプラインへ設定し、指定テクスチャで立方体を描画する。
 	// シェーダーを描画パイプラインに設定
 	Shader3d_Begin();
 
@@ -228,7 +230,7 @@ void Cube_Draw(const XMMATRIX& mtxWorld,int texid)
 
 
 	//頂点Indexを描画パイプラインに設定
-	
+
 	g_pContext->IASetIndexBuffer(g_pIndexBuffer,DXGI_FORMAT_R16_UINT,0);
 
 	//ワールド変換座標の設定

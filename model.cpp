@@ -1,11 +1,11 @@
 
 /*==========================================================================
 モデルの描画やロード[model.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -177,6 +177,7 @@ MODEL* ModelLoad(const char* FileName, float scale, bool isblender)
 
 void ModelRelease(MODEL* model)
 {
+    // モデルに属するメッシュ、テクスチャ参照、読み込みデータを解放する。
     if (!model) return;
 
     if (model->VertexBuffer && model->IndexBuffer)
@@ -222,6 +223,7 @@ void ModelRelease(MODEL* model)
 
 void ModelDraw(const MODEL* model, const XMMATRIX& mtxWorld)
 {
+    // 各メッシュのバッファとマテリアルを設定し、モデルを描画する。
     Shader3d_Begin();
 
     for (unsigned int i = 0; i < model->AiScene->mNumMeshes; i++)

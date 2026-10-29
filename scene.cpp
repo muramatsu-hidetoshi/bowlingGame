@@ -2,8 +2,7 @@
 
 シーン管理[scne.cpp]
 
-												Author : hidetoshi muramatu
-												Date   : 2025/09/17
+
 ---------------------------------------------------------------------------
 
 
@@ -70,25 +69,26 @@ void Scene_Update(double elapsed_time)
 
 void Scene_Draw()
 {
-	
+
 	g_SceneDraw[g_Scene]();
 }
 
 void Scene_Finalize()
 {
-	
+
 	g_SceneFinalize[g_Scene]();
 }
 
 void Scene_Change()
 {
+    // 現在のシーンを終了し、予約されている次のシーンを初期化する。
 	if (g_Scene != g_SceneNext) {
 		//現在のシーンの後かたずけ
 		Scene_Finalize();
 		g_Scene = g_SceneNext;
 		Scene_Initialize();
 	}
-	
+
 }
 
 void Scene_SetNextScene(Scene next_scene)

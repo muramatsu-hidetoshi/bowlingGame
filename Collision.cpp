@@ -2,8 +2,7 @@
 コリジョン判定[collision.cpp]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/11/18
+
 ---------------------------------------------------------------------------
 
 
@@ -21,6 +20,7 @@ using namespace DirectX;
 
 void AABB::Move(const XMFLOAT3& position)
 {
+    // 中心座標を更新し、中心と半径から最小点・最大点を再計算する。
 	m_Center = position;
 	m_Min = { m_Center.x - m_Half.x, m_Center.y - m_Half.y, m_Center.z - m_Half.z };
 	m_Max = { m_Center.x + m_Half.x, m_Center.y + m_Half.y, m_Center.z + m_Half.z };
@@ -36,18 +36,20 @@ void AABB::Move(const XMVECTOR& position)
 
 bool AABB::IsOverlap(const AABB& aabb)const
 {
-	
+    // 3軸すべてで区間が重なる場合に、2つのAABBが重なっていると判定する。
+
 	return    m_Min.x<aabb.GetMax().x
 		   && m_Max.x>aabb.GetMin().x
 		   && m_Min.y<aabb.GetMax().y
 		   && m_Max.y>aabb.GetMin().y
 		   && m_Min.z<aabb.GetMax().z
 		   && m_Max.z>aabb.GetMin().z;
-    
+
 }
 
 Hit AABB::IsHit(const AABB& aabb)const
 {
+    // 重なりがある場合、最小の押し戻し軸を衝突法線として返す。
 	if (!IsOverlap(aabb)) {
 		return {};
 	}

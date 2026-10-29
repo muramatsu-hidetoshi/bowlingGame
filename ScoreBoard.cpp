@@ -1,8 +1,8 @@
 ﻿/*==========================================================================
 
 スコア表示（フレーム・投球毎）を管理 [ScoreBoard.cpp]
-   
-                                                    Author : hidetoshi muramatu
+
+
 ---------------------------------------------------------------------------
 
 
@@ -60,7 +60,7 @@ struct Frame
     int throw1 = -1;
     int throw2 = -1;
     int frameScore = 0;
-    
+
 };
 
 static Frame g_Frames[FRAME_COUNT];
@@ -157,6 +157,7 @@ void ScoreSet(int a)
 // - 不整合が起きた場合、デバッグ出力で警告する
 void Score_AddThrow(int pins)
 {
+    // 投球本数をフレームへ記録し、ストライクや2投目に応じて次の入力位置を進める。
     // デバッグログ追加：Score_AddThrow に渡される値を確実に出力する
     hal::dout << "Score_AddThrow called: pins=" << pins
               << " currentFrame=" << g_CurrentFrame
@@ -227,6 +228,7 @@ void Score_Recalculate()
 
 void ScoreBoard_Draw()
 {
+    // フレームごとの投球記号と合計点をスコアボードへ描画する。
     // デバッグ：現在保持しているフレーム情報を毎フレーム出力（調査用）
 #ifdef _DEBUG
     {
@@ -239,7 +241,7 @@ void ScoreBoard_Draw()
     }
 #endif // _DEBUG
 
-   
+
 
     Sprite_Draw(
         g_ScoreBoardTexId,

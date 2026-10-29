@@ -1,8 +1,6 @@
 /*==============================================================================
 
    Direct3D11用 デバックテキスト表示 [debug_text.cpp]
-														 Author : Youhei Sato
-														 Date   : 2025/06/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
@@ -122,11 +120,11 @@ namespace hal
 				VS_OUT main(VS_IN vsin)
 				{
 					VS_OUT vsout;
-    
+
 					vsout.posH = mul(vsin.posL, mtx);
 					vsout.color = vsin.color;
 					vsout.uv = vsin.uv;
-    
+
 					return vsout;
 				}
 			)";
@@ -213,7 +211,7 @@ namespace hal
 		m_TextLines.back().strings.emplace_back(color); // 新しい文字列を追加
 
 		for(; *pText; pText++) {
-	
+
 			if (*pText == '\n') {
 				m_TextLines.emplace_back(); // 行を増やす
 				m_TextLines.back().strings.emplace_back(color); // 新しい文字列を追加
@@ -263,6 +261,7 @@ namespace hal
 
 	void DebugText::Draw()
 	{
+    // 蓄積した文字列を文字単位のスプライトとして画面へ描画する。
 		if( !m_CharacterCount){
 			return; // 描画する文字がない場合は何もしない
 		}
@@ -357,7 +356,7 @@ namespace hal
 
 		// インデックスバッファを描画パイプラインに設定
 		m_pContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-		
+
 		// 頂点シェーダーを描画パイプラインに設定
 		m_pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
 

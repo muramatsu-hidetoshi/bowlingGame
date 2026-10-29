@@ -3,8 +3,7 @@
 スプライトアニメーションの描画
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/06/20
+
 ---------------------------------------------------------------------------
 
 
@@ -61,7 +60,7 @@ public:
 	}
 	virtual ~AnimPattern() = default;
 
- 
+
 	virtual void Draw(
 		float dx, float dy, 
 		float dw, float dh, 
@@ -128,7 +127,7 @@ public:
 	AnimPatternPlayer(AnimPattern* pAnimPattern)
 		: m_pAnimPattern(pAnimPattern)
 	{
-		
+
 	}
 
 	void Update(double elapsed_time);
@@ -140,7 +139,7 @@ public:
 		const DirectX::XMFLOAT2& scal,
 		const DirectX::XMFLOAT2& pivot,
 		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }
-		 
+
 	);
 	bool IsAnimStopeed()const { return m_is_stopped; }
 

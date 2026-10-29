@@ -3,8 +3,7 @@
 
 リザルト画面[result.cpp]
 
-												Author : hidetoshi muramatu
-												Date   : 2025/09/17
+
 ---------------------------------------------------------------------------
 
 
@@ -27,11 +26,11 @@
 #include "player.h"
 /*==========================================================================
 リザルト画面の描画や初期化など[result.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -74,6 +73,7 @@ static ResultState g_ResultState = RESULT_STATE_FADE_IN; // タイトルの状態
 
 void Result_Initialize()
 {
+    // スコア表示や画面遷移に必要なリザルト画面の状態を初期化する。
 	g_ResultTex = Texture_Load(L"rom\\dekoi.png"); // タイトルテクスチャの読み込み
 	g_TexPushAnyKeyId = Texture_Load(L"rom\\push_Enter_key.png"); // キーを押してくださいテクスチャの読み込み
 	g_TexID = Texture_Load(L"rom\\Resultscoa.png");
@@ -86,6 +86,7 @@ void Result_Initialize()
 
 void Result_Update(double elapsed_time)
 {
+    // リザルト画面の入力と表示状態を更新する。
 
 	g_AccumulatedTime += elapsed_time;
 	switch (g_ResultState)
@@ -138,12 +139,13 @@ void Result_Update(double elapsed_time)
 
 	}
 
-	
+
 
 }
 
 void Result_Draw()
 {
+    // 確定したゲーム結果と画面操作案内を描画する。
 	Player* p = GetPlayer();
 	Score* s = GetScore();
 
@@ -192,6 +194,7 @@ void Result_Draw()
 
 void Result_Finalize()
 {
+    // リザルト画面が使用したリソースを解放する。
 }
 void DrawNumber(int x, int y, int number)
 {

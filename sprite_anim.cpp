@@ -4,8 +4,8 @@
 	スプライトシートを使った2Dアニメーション管理機能[sprite_anim.cpp]
 
 
-													Author : hidetoshi muramatu
-													
+
+
 ---------------------------------------------------------------------------
 
 
@@ -75,26 +75,27 @@ void AnimPattern::BillboardDraw(
 
 	*/
 
-	
+
 
 }
 
 void AnimPatternPlayer::Update(double elapsed_time)
 {
+    // 経過時間をフレーム時間へ加算し、必要な回数だけアニメーションを進める。
 	double a;
 	m_accumulated_time += elapsed_time; // 時間を更新
 
 	a = m_pAnimPattern->GetSecondPerPattern();
 
 	if (m_accumulated_time >= a) {
-		
+
 		m_pattern++;
-		
-		
+
+
 		if(m_pAnimPattern->IsLoop())
 		{
 			m_pattern = (m_pattern ) % m_pAnimPattern->GetPatternMax(); // パターンを進める
-			
+
 		}
 		else
 		{

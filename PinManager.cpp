@@ -1,10 +1,10 @@
 /*==========================================================================
 ピンの管理者[pinmanager.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -24,6 +24,7 @@ static int g_HitSound{};
 
 void PinManager::Initialize()
 {
+    // 初期配置のピンと衝突時に使う効果音を準備する。
     ResetPins();
     g_HitSound = LoadAudio("rom\\sound\\HitSound.wav");
     g_StrikeSound = LoadAudio("rom\\sound\\StrikeSound.wav");
@@ -40,6 +41,7 @@ void PinManager::Draw()
 
 void PinManager::Update(float dt, BowlingBall& ball)
 {
+    // ピンの物理状態を更新した後、ボールとピン、ピン同士の衝突を順に処理する。
     // ① 個別更新
     for (auto& p : m_pins)
         p.Update(dt);
@@ -66,12 +68,13 @@ void PinManager::Update(float dt, BowlingBall& ball)
             ResolvePinPin(m_pins[i], m_pins[j]);
         }
     }
-   
+
 }
 
 
 void PinManager::Finalize()
 {
+    // ピン管理で読み込んだ効果音を解放する。
     UnloadAudio(g_StrikeSound);
     UnloadAudio(g_HitSound);
 }
@@ -111,6 +114,7 @@ void PinManager::ResolvePinPin(Pins& a, Pins& b)
 }
 void PinManager::ResolveBallPinHit(BowlingBall& ball, Pins& pin)
 {
+    // ボールの速度成分から衝突方向への力を求め、ピンへ加える。
     // 球 → ピン方向
     XMVECTOR dir =
         XMLoadFloat3(&pin.GetPosition()) -
@@ -177,6 +181,7 @@ int PinManager::GetInitialPinCount() const
 
 void PinManager::SetupBowlingPins(const XMFLOAT3& headPinPos)
 {
+    // 先頭ピンの位置を基準に、三角形状の10本を配置する。
     m_pins.clear();
 
     static constexpr float DX = 1.6f;

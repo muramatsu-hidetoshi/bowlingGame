@@ -2,8 +2,7 @@
 グリッドの表示[gruid.cpp]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/
+
 ---------------------------------------------------------------------------
 
 
@@ -47,7 +46,8 @@ struct Vertex3d
 // ------------------------------------------------------
 void Gulid_Initialize(int x_count,int z_count,float size)
 {
-	
+    // 指定した分割数と間隔からグリッドの頂点を作成して登録する。
+
 	g_pDevice = Direct3D_GetDevice();
 	g_pContext = Direct3D_GetContext();
 
@@ -97,7 +97,7 @@ void Gulid_Initialize(int x_count,int z_count,float size)
 
 	g_pDevice->CreateBuffer(&bd, &sd, &g_pVertexBuffer);
 	delete[] pv;
-	
+
 }
 
 // ------------------------------------------------------
@@ -126,7 +126,7 @@ void Gulid_Draw()
 	UINT stride = sizeof(Vertex3d);
 	UINT offset = 0;
 	g_pContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
-	
+
 	Shader3d_SetWorldMatrix(XMMatrixIdentity());
 
 

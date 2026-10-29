@@ -1,10 +1,10 @@
 /*==========================================================================
 ゲームオーバ画面の実装[gameOver.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -44,6 +44,7 @@ static GameOverState g_TitleState = GAMEOVER_STATE_FADE_IN; // タイトルの状態
 
 void GameOver_Initialize()
 {
+    // ゲームオーバー画面の画像や表示状態を初期化する。
 	g_GameOverTex = Texture_Load(L"rom\\gameover.png"); // タイトルテクスチャの読み込み
 	//g_TexPushAnyKeyId = Texture_Load(L"rom\\push_any_key.png"); // キーを押してくださいテクスチャの読み込み
 
@@ -54,6 +55,7 @@ void GameOver_Initialize()
 
 void GameOver_Update(double elapsed_time)
 {
+    // 入力と経過時間を確認し、ゲームオーバー画面の状態を更新する。
 	g_AccumulatedTime += elapsed_time;
 	switch (g_TitleState)
 	{
@@ -108,10 +110,12 @@ void GameOver_Update(double elapsed_time)
 
 void GameOver_Draw()
 {
+    // ゲームオーバー画面と操作案内を描画する。
 	Sprite_Draw(g_GameOverTex, 0, 0, 1600, 900);
 }
 
 void GameOver_Finalize()
 {
+    // 画面で使用したテクスチャなどを解放する。
 
 }

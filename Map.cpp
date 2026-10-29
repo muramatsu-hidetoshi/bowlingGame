@@ -1,10 +1,10 @@
 /*==========================================================================
 ステージの初期化、描画など[Map.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -67,8 +67,9 @@ const AABB& GetCollision(int index)
 
 void Map_Initialize()
 {
-   
-  
+    // ステージのブロック配置、モデル、当たり判定を初期化する。
+
+
     for (int lane = -LEFT_LANES; lane <= RIGHT_LANES; ++lane)
     {
         float xOffset = BASE_X + lane * LANE_WIDTH;
@@ -144,7 +145,7 @@ void Map_Initialize()
 
     }
 
-    
+
 
     g_MapTexId[0] = Texture_Load(L"rom\\Texture\\kankyaku.jpg");
     g_MapTexId[1] = Texture_Load(L"rom\\Texture\\jimen.jpg");
@@ -227,6 +228,7 @@ void Map_Finalize()
 
 void Map_Draw()
 {
+    // ステージに配置されたブロックやモデルを順に描画する。
     for (auto& block : g_Blocks)
     {
         block.Draw();
@@ -274,7 +276,7 @@ void Block::Draw() const
 
     case Block::Tree:
     case Block::Rock:
-   
+
     case Block::START:
     case Block::GOAL:
         ModelDraw(g_MapModels[1], mtxworld);
@@ -301,5 +303,5 @@ void Block::Draw() const
     }
     // デバッグ描画：AABB を赤いラインで表示
     DebugDraw_AddAABB(m_Aabb, { 1.0f, 0.0f, 0.0f, 1.0f });
-   
+
 }

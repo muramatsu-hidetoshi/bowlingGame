@@ -4,8 +4,7 @@
 	プレイヤークラス [player.h]
 
 
-													Author : hidetoshi muramatu
-													Date   : 2025/09/20
+
 ---------------------------------------------------------------------------
 
 
@@ -29,7 +28,7 @@ public:
 
 	 Player()
 	 {
-	 
+
 		 m_player_x = 0;
 		 m_player_y = 0;
 		 m_score = 0;
@@ -56,7 +55,7 @@ public:
 	void PlayerMoveDawn();
 	void PlayerMoveLeft();
 	void PlayerMoveRight();
-	
+
 };
 
 Player* GetPlayer();
@@ -73,7 +72,7 @@ void DrawSelectedBlock(bool enabled, float x, float y);
    　クリックして選択したブロック列を全て取得
 	 次にクリックしたブロックと入れ替え
 
- 
+
 
 
 

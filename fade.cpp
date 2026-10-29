@@ -2,8 +2,7 @@
   フェード処理 [fade.cpp]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/09/10
+
 ---------------------------------------------------------------------------
 
 
@@ -33,7 +32,7 @@ void Fade_Initialize()
 {
 	g_fadeState = FADE_STATE_NONE;
 	g_AccumulatedTime = 0.0;
-	
+
 	//g_TexId = Texture_Load(L"rom\\white_8x8.png");
 	g_TexId = Texture_Load(L"rom\\white_8x8.png");
 
@@ -41,6 +40,7 @@ void Fade_Initialize()
 
 void Fade_Update(double elapsed_time)
 {
+    // 経過時間に応じて不透明度を進め、フェード状態を更新する。
 	//じかんけいそくとステートの管理
 	if (g_fadeState == FADE_STATE_NONE ||
 		g_fadeState == FADE_STATE_FADE_IN_FINISHED ||
@@ -53,7 +53,7 @@ void Fade_Update(double elapsed_time)
 	// 透明度の計算
 	float alpha = static_cast<float>(LifeTime/g_fadeTime);
 
-	
+
 	g_FadeColor.w = (g_fadeState == FADE_STATE_FADE_IN) ? (1.0f - alpha) : alpha;
 
 
@@ -62,7 +62,7 @@ void Fade_Update(double elapsed_time)
 		g_fadeState = (g_fadeState == FADE_STATE_FADE_IN) ? FADE_STATE_FADE_IN_FINISHED : FADE_STATE_FADE_OUT_FINISHED;
 		return;
 	}
-	
+
 }
 
 void Fade_Draw()
@@ -82,7 +82,7 @@ void Fade_Draw()
 
 void Fade_Finalize()
 {
-	
+
 
 }
 

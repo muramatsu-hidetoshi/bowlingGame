@@ -2,8 +2,7 @@
 エフェクト制御[game_effect.h]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/09/19
+
 ---------------------------------------------------------------------------
 
 
@@ -26,7 +25,7 @@ struct Effect
 	double lifeTime;
 	double birthTime;
 	XMFLOAT4 color;
-	
+
 };
 
 static constexpr int EFFECT_MAX = 128;
@@ -95,7 +94,7 @@ void Effect_Finalize()
 
 void Effect_Create(const DirectX::XMFLOAT2& position, float size, double lifeTime, const DirectX::XMFLOAT4& color)
 {
-	
+
 	if (g_EffectCount >= EFFECT_MAX)return;
 	g_Effects[g_EffectCount].position = position;
 	g_Effects[g_EffectCount].size = size;

@@ -1,10 +1,10 @@
 /*==========================================================================
 テールを使った爆破の機能[trailexplosion]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -69,6 +69,7 @@ void TrailExplosion_Finalize()
 
 void TrailExplosion_Update(float deltaTime)
 {
+    // 爆発粒子の位置と寿命を更新し、終了した粒子を再利用可能にする。
 	for (auto& explosion : g_Explosions)
 	{
 		if (!explosion.active) continue;
@@ -112,7 +113,7 @@ void TrailExplosion_Update(float deltaTime)
 			trail.positionHistory[49] = trail.position;
 
 
-			
+
 
 		}
 	}
@@ -127,6 +128,7 @@ void TrailExplosion_Update(float deltaTime)
 
 void TrailExplosion_Draw()
 {
+    // 生存中の爆発粒子をカメラ向きのスプライトとして描画する。
 	Trail_SetCameraPosition(g_CameraPosition);
 
 	for (const auto& explosion : g_Explosions)
@@ -176,6 +178,7 @@ void TrailExplosion_Draw()
 
 void TrailExplosion_Create(const TrailExplosionSettings& settings)
 {
+    // 設定値に従って空きスロットへ粒子を生成し、初期速度と寿命を与える。
 	if (g_Explosions.size() >= MAX_EXPLOSIONS) return;
 
 	ExplosionInstance explosion;

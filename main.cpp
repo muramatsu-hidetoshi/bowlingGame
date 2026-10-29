@@ -4,8 +4,6 @@ main.cpp [main.cpp]
 
 
 
-												Author :
-												Date   : 2025/
 ---------------------------------------------------------------------------
 
 
@@ -139,7 +137,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 	//Fade_StartIn(0.0f, false, { 0.0f,0.0f,0.0f,1.0f }); // フェードインを開始
 
 	KeyLogger_Initialize();
-	
+
 	SystemTimer_Initialize(); // システムタイマーの初期化
 	InitAudio(); // オーディオの初期化
 	//初期化
@@ -182,9 +180,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 
 	Mouse_SetVisible(true); // マウスカーソルを表示する
 	Scene_Initialize();
-	
+
 	Cube_Initialize(Direct3D_GetDevice(), Direct3D_GetContext());
-	
+
 	//Gulid_Initialize(Direct3D_GetDevice(), Direct3D_GetContext());
 	//int texid = Texture_Load(L"rom\\1.png"); // テクスチャの読み込み
 	//int texid2 = Texture_Load(L"rom\\20170529154631.png"); // テクスチャの読み込み
@@ -245,7 +243,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 				MouseLogger_Update();
 				//MouseState_tag ms{};
 				//Mouse_GetState(&ms); // マウスの状態を取得
-			
+
 
 
 				// ゲームの処理
@@ -306,7 +304,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 
 
 
-				
+
 				//Fade_Draw();
 				Scene_Draw(); // シーンの描画
 				Fade_Draw();
@@ -343,7 +341,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 	Texture_Finalize();
 	Shader_Finalize();
 	Fade_Finalize();
-	
+
 	Direct3D_Finalize();
 	Mouse_Finalize();
 

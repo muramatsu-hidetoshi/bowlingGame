@@ -1,11 +1,11 @@
 
 /*==========================================================================
 デバック用カメラの実装[debug.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -21,7 +21,7 @@
 using namespace DirectX;
 
 DebugCamera::DebugCamera(const XMFLOAT3& position, const XMFLOAT3& target)
-   
+
 {
     // 初期 Front ベクトル（カメラの正面方向）
     XMVECTOR xtarget = XMLoadFloat3(&target);
@@ -80,7 +80,7 @@ void DebugCamera::Update(double elapsed_time)
     }
 #endif // _DEBUG
 
-  
+
 
     // upベクトルは常に固定
     xup = XMVectorSet(0, 1, 0, 0);

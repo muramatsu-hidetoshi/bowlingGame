@@ -1,11 +1,11 @@
 
 /*==========================================================================
 ÉvÉåÉCÉÑÅ[ÇÃèàóù[player.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -33,7 +33,7 @@ void Player_Initilize()
 void Player_Update(double elapsed_time)
 {
 
-	
+
 }
 
 void Player_Draw()
@@ -50,28 +50,28 @@ void Player_Finalize()
 void Player::SetPlayerAllScorer(int index,int score)
 {
 
-	
+
 
 
 }
 void Player::PlayerMoveUp()
 {
-	
+
 
 }
 
 
 void Player::PlayerMoveDawn()
 {
-	
-	
+
+
 
 }
 
 void Player::PlayerMoveLeft()
 {
-	
-	
+
+
 }
 
 void Player::PlayerMoveRight()
@@ -87,11 +87,11 @@ Player* GetPlayer()
 
 void DrawSelectedColumn(bool enabled, float x, double elapsedTime)
 {
-	
+
 }
 
 
 void DrawSelectedBlock(bool enabled, float x, float y)
 {
-	
+
 }

@@ -1,9 +1,9 @@
 /*==========================================================================
 
 	デバッグ用のライン描画ユーティリティ。[ DebugDraw.cpp]
-	
 
-													Author : hidetoshi muramatu
+
+
 ---------------------------------------------------------------------------
 
 
@@ -30,6 +30,7 @@ static int g_maxVertices = 0;
 
 void DebugDraw_Initialize(int maxLines)
 {
+    // デバッグ線分を保持する領域と描画用バッファを準備する。
 	g_pDevice = Direct3D_GetDevice();
 	g_pContext = Direct3D_GetContext();
 	g_maxVertices = maxLines * 2;
@@ -49,6 +50,7 @@ void DebugDraw_Initialize(int maxLines)
 
 void DebugDraw_Finalize()
 {
+    // デバッグ描画用に確保したバッファを解放する。
 	if (g_pVB) { g_pVB->Release(); g_pVB = nullptr; }
 	g_vertices.clear();
 	g_maxVertices = 0;
@@ -63,6 +65,7 @@ void DebugDraw_AddLine(const XMFLOAT3& a, const XMFLOAT3& b, const XMFLOAT4& col
 
 void DebugDraw_AddAABB(const AABB& aabb, const XMFLOAT4& color)
 {
+    // 指定されたAABBと色を、後続のデバッグ描画用リストへ追加する。
 	// 8頂点を計算
 	const XMFLOAT3& mn = aabb.GetMin();
 	const XMFLOAT3& mx = aabb.GetMax();
@@ -92,6 +95,7 @@ void DebugDraw_AddAABB(const AABB& aabb, const XMFLOAT4& color)
 
 void DebugDraw_Draw()
 {
+    // 登録済みの線分や当たり判定形状をまとめて描画する。
 	if (g_vertices.empty() || !g_pVB || !g_pContext) return;
 
 	// バッファへ書き込み

@@ -1,10 +1,10 @@
 /*==========================================================================
 マウスのモジュール[mauselogger.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -35,6 +35,7 @@ void MouseLogger_Initialize()
 
 void MouseLogger_Update()
 {
+    // マウスの現在状態を読み取り、前回状態との差分を更新する。
     // 前フレームを保持
     memcpy(&gPrevState, &gCurrentState, sizeof(Mouse_State));
     gPrevWheelDelta = gWheelDelta;

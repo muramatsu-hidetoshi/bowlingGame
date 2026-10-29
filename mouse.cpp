@@ -160,6 +160,7 @@ void Mouse_SetVisible(bool visible)
 
 void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
+    // Windowsのマウスメッセージを状態構造体へ反映する。
     HANDLE evts[3] = {
         gScrollWheelValue,
         gAbsoluteMode,

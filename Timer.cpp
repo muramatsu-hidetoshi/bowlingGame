@@ -1,10 +1,9 @@
 /*==========================================================================
   タイマー管理[timer.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													Date   : 2025/09/22
+
+
 ---------------------------------------------------------------------------
 
 
@@ -44,6 +43,7 @@ void Timer_Initilize(float x, float y, int digit)
 
 void Timer_Update(double elapsed_time)
 {
+    // 経過時間を加算し、設定された時間への到達状態を更新する。
 
 	g_Timer -= elapsed_time;
 	g_ShowTimer = g_Timer;

@@ -1,8 +1,6 @@
 /*==============================================================================
 
    シェーダー [shader.cpp]
-														 Author : Youhei Sato
-														 Date   : 2025/05/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
@@ -42,6 +40,7 @@ struct PS_CB1
 
 bool Shader3d_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+    // 3D描画用シェーダーと行列・マテリアル用定数バッファを準備する。
 	HRESULT hr; // 戻り値格納用
 
 	// デバイスとデバイスコンテキストのチェック
@@ -145,14 +144,14 @@ bool Shader3d_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	}
 
 	// ピクセルシェーダー用定数バッファの作成
-	
+
 	buffer_desc.ByteWidth = sizeof(PS_CB1); // バッファのサイズ
 	g_pDevice->CreateBuffer(&buffer_desc, nullptr, &g_pPSConstantBuffer1);
 
 	buffer_desc.ByteWidth = sizeof(XMFLOAT4); // バッファのサイズ
 
 	g_pDevice->CreateBuffer(&buffer_desc, nullptr, &g_pPSConstantBuffer);
-	
+
 	g_pDevice->CreateBuffer(&buffer_desc, nullptr, &g_pPSConstantBuffer2);
 
 

@@ -2,8 +2,7 @@
 マップデータの管理[map.h]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/11/04
+
 ---------------------------------------------------------------------------
 
 
@@ -50,13 +49,13 @@ private:
 public:
 	Block(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& scale, Type type)
 		:m_Position(position),m_Scale(scale), m_Type(type)
-		
+
 	{
-		
+
 
 	}
 
-	
+
 
 	const DirectX::XMFLOAT3& GetScale() const { return m_Scale; }
 

@@ -2,8 +2,7 @@
 ライトの実装[light.cpp]
 
 
-												Author : hidetoshi muramatu
-												Date   : 2025/
+
 ---------------------------------------------------------------------------
 
 
@@ -22,6 +21,7 @@ using namespace DirectX;
 // 初期化：デフォルトの ambient / diffuse をシェーダへ設定
 void Light_Initialize()
 {
+    // 3Dシェーダーで使うライト定数バッファを作成する。
     // 適度なアンビエント（暗い場合はここを上げる）
     Light_SetAmnient(XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f));
 

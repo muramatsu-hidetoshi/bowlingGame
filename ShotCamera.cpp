@@ -1,10 +1,10 @@
 /*==========================================================================
 ショットカメラの機能[shotCamera.cpp]
-	
 
 
-													Author : hidetoshi muramatu
-													
+
+
+
 ---------------------------------------------------------------------------
 
 
@@ -22,7 +22,7 @@ ShotCamera::ShotCamera(const DirectX::XMFLOAT3& target_a, const DirectX::XMFLOAT
 
 {
 
-    
+
     XMVECTOR dir = XMLoadFloat3(&m_target_a) - XMLoadFloat3(&m_target_b);
     dir = XMVector3Normalize(dir);
     XMVECTOR position = XMLoadFloat3(&m_target_b) - dir * m_distance;
@@ -45,7 +45,7 @@ void ShotCamera::SetMatrix()
             XMVECTOR({ 0,1,0 }));
 
     SetViewMatrix(mtxView);
-  
+
     float w = static_cast<float>(Direct3D_GetBackBufferWidth());
     float h = static_cast<float>(Direct3D_GetBackBufferHeight());
 

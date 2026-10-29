@@ -2,8 +2,7 @@
 
 パーティクルエフェクト実装[particleEffect.cpp]
 
-                                                Author : hidetoshi muramatu
-                                                Date   : 2025/01/11
+
 ---------------------------------------------------------------------------
 
 =========================================================================*/
@@ -54,6 +53,7 @@ void ParticleEffect_Finalize()
 
 void ParticleEffect_Update(double elapsedTime)
 {
+    // 各パーティクルの経過時間を進め、寿命を終えたものを取り除く。
     g_totalTime += elapsedTime;
 }
 

@@ -1,8 +1,6 @@
 /*==============================================================================
 
    システムタイマー [system_timer.h]
-                                                         Author : Youhei Sato
-                                                         Date   : 2018/06/17
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
@@ -33,6 +31,7 @@ static LARGE_INTEGER GetAdjustedCurrentTime(void);
 // システムタイマーの初期化
 void SystemTimer_Initialize(void)
 {
+    // 高精度カウンターの周波数と初期時刻を取得する。
     g_bTimerStopped = true;
     g_TicksPerSec = 0;
     g_StopTime = 0;
@@ -94,6 +93,7 @@ void SystemTimer_Advance(void)
 // 計測時間を取得
 double SystemTimer_GetTime(void)
 {
+    // 一時停止時間を除いた、ゲーム進行用の経過時間を秒単位で返す。
     LARGE_INTEGER time = GetAdjustedCurrentTime();
 
     return (double)(time.QuadPart - g_BaseTime) / (double)g_TicksPerSec;

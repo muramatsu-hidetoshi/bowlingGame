@@ -2,8 +2,7 @@
 
 ビルボードのシェーダ[shaderBillBoard]
 
-												Author : hidetoshi muramatu
-												Date   : 2025/
+
 ---------------------------------------------------------------------------
 
 
@@ -53,9 +52,10 @@ struct BillboardUV
 
 bool ShaderBillboard_Initialize()
 {
+    // ビルボード描画用のシェーダーと定数バッファを初期化する。
 	HRESULT hr; // 戻り値格納用
 
-	
+
 
 
 	// 事前コンパイル済み頂点シェーダーの読み込み
@@ -114,7 +114,7 @@ bool ShaderBillboard_Initialize()
 	D3D11_BUFFER_DESC buffer_desc{};
 	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4); // バッファのサイズ
 	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
-	
+
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer0);
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer1);
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer2);
@@ -181,6 +181,7 @@ bool ShaderBillboard_Initialize()
 
 void ShaderBillboard_Finalize()
 {
+    // ビルボード描画用リソースを解放する。
 
 	SAFE_RELEASE(g_pSamplerState);
 	SAFE_RELEASE(g_pPSConstantBuffer0);
@@ -229,6 +230,7 @@ void ShaderBillboard_UV(const DirectX::XMFLOAT2& offset, const DirectX::XMFLOAT2
 
 void ShaderBillboard_Begin()
 {
+    // ビルボード描画に使うシェーダーと入力状態を設定する。
 
 	// 頂点シェーダーとピクセルシェーダーを描画パイプラインに設定
 	Direct3D_GetContext()->VSSetShader(g_pVertexShader, nullptr, 0);

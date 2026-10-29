@@ -2,8 +2,7 @@
 
 タイトルの表示[title.cpp]
 
-												Author : hidetoshi muramatu
-												Date   : 2025/09/12
+
 ---------------------------------------------------------------------------
 
 
@@ -46,21 +45,23 @@ static TitleState g_TitleState = TITLE_STATE_FADE_IN; // タイトルの状態
 
 void Title_Initialize()
 {
+    // タイトル表示と開始操作に必要な状態を初期化する。
 	//Fade_StartIn(100,false); // フェードイン開始
 
 	g_TitleTex = Texture_Load(L"rom\\Texture\\title.png"); // タイトルテクスチャの読み込み
 	g_TexPushAnyKeyId = Texture_Load(L"rom\\Push_Enter_Key.png"); // キーを押してくださいテクスチャの読み込み
-	
+
 	//setumeiTexId[3] = Texture_Load(L"rom\\Push_Enter_Key.png");
 
 	PushCount = 0;
-	
+
 	g_TitleState = TITLE_STATE_KEYINPUT_WAIT;
 	g_AccumulatedTime = 0.0;
 }
 
 void Title_Update(double elapsed_time)
 {
+    // タイトル画面の入力とアニメーションを更新する。
 	g_AccumulatedTime += elapsed_time;
 	switch (g_TitleState)
 	{
@@ -83,10 +84,10 @@ void Title_Update(double elapsed_time)
 			//PushCount++;
 			//サウンド
 		}
-		
-		
-		
-		
+
+
+
+
 		break;
 
 	case TITLE_STATE_KEYINPUT_ACTION:
@@ -120,7 +121,8 @@ void Title_Update(double elapsed_time)
 
 void Title_Draw()
 {
-	
+    // タイトル画面と操作案内を描画する。
+
 
 	if (PushCount == 0)
 	{
@@ -150,14 +152,15 @@ void Title_Draw()
 	{
 		Sprite_Draw(setumeiTexId[3], 0, 0, 1600, 900);
 	}*/
-	
 
-	
+
+
 
 }
 
 void Title_Finalize()
 {
+    // タイトル画面が使用したリソースを解放する。
 
-	
+
 }

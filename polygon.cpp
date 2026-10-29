@@ -1,8 +1,6 @@
 /*==============================================================================
 
    ポリゴン描画 [polygon.cpp]
-														 Author : Youhei Sato
-														 Date   : 2025/05/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
@@ -68,9 +66,9 @@ void Polygon_Finalize(void)
 	// リソースの解放
 	SAFE_RELEASE(g_pTexture);
 	SAFE_RELEASE(g_pVertexBuffer);
-	
+
 	// 注意！初期化で外部から設定されるもの。Release不要。
-	
+
 }
 
 void Polygon_Draw(void)
@@ -80,8 +78,8 @@ void Polygon_Draw(void)
 	v[0].positionはCPU側のメモリ上にある頂点データであり、GPUはそれを読み取って描画する。
 	そのため、CPU側で頂点データを更新した後、GPUにそのデータを送る必要がある。
 
-	
-	
+
+
 	非同期にCPUとGPUはうごいているためGPUが書いている時にCPUが書き換えると、GPUが読み取るデータが不正になる可能性がある。
 	そのため、頂点バッファをロックして、CPUが書き込む間はGPUがそのバッファを読み取らないようにする必要がある。
 	ロックを行うことで、CPUが頂点データを書き込んでいる間、GPUはそのバッファを読み取らないようにする。
@@ -89,10 +87,10 @@ void Polygon_Draw(void)
 	ロックを行うことで、CPUが頂点データを書き込んでいる間、GPUはそのバッファを読み取らないようにする。
 	ロックをしている間にCPUが頂点データを書き込む
 	お互いが非同期にうごけるのにロックして歩調を合わせているためこれは低速で効率が悪い
-	
-	
-	
-	
+
+
+
+
 	*/
 
 
@@ -117,7 +115,7 @@ void Polygon_Draw(void)
 	static  float b = 0.0f; // 角度をラジアンで指定
 	constexpr float W = 512.0f ;
 	constexpr float H = 512.0f ;
-	
+
 	float x = 64.0f;
 	float y = 64.0f;
 
@@ -135,7 +133,7 @@ void Polygon_Draw(void)
 	v[3].position = { 1500.0f, 800.0f, 0.0f };*/
 
 
-	
+
 
 	//// 頂点色を設定
 	//v[0].color = { 1.0f, 0.0f, 0.0f, 1.0f }; // 赤
@@ -169,7 +167,7 @@ void Polygon_Draw(void)
 	g_pContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
 	/*
-	
+
 	一番左の座標を右の座標上の座標下の座標はどこか設定
 	一番遠いZ座標はどこか一番近いZ座標はどこか設定
 
@@ -177,7 +175,7 @@ void Polygon_Draw(void)
 	一律に同じ値をかけたり引いたりすれば画面を揺らせる
 
 
-	
+
 	*/
 	// 頂点シェーダーに変換行列を設定
 	Shader_SetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
@@ -190,7 +188,7 @@ void Polygon_Draw(void)
 	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 
-	
+
 
 
 

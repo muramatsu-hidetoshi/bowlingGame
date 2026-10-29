@@ -2,8 +2,7 @@
 
 キー入力の管理[keylogger.cpp]
 
-                                                Author : hidetoshi muramatu
-                                                Date   : 2025/06/27
+
 ---------------------------------------------------------------------------
 
 
@@ -30,6 +29,7 @@ void KeyLogger_Initialize()
 
 void KeyLogger_Update()
 {
+    // 前回のキー状態を保存してから現在値を取得し、押下・解放を判定できるようにする。
 
 	const Keyboard_State* State = Keyboard_GetState();
 	LPBYTE pt = (LPBYTE)&g_TriggerState;

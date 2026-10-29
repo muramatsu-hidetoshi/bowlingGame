@@ -101,6 +101,7 @@ void Keyboard_Reset(void)
 // キーボード制御のためのウォンどうメッセージプロシージャフック関数
 void Keyboard_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
+    // Windowsのキーイベントを現在のキーボード状態へ反映する。
     bool down = false;
 
     switch (message)
