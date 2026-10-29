@@ -1,287 +1,240 @@
 ﻿/*==========================================================================
-単純な3Dの四角形の実装 [cube.cpp]
+    立方体の実装 [cube.cpp]
 
+    【ファイルの役割】
+    立方体の頂点データとインデックスデータを定義し、
+    Direct3Dのバッファを使用して立方体を描画する。
 
-
-
-
----------------------------------------------------------------------------
-
-
-
+    【主な処理】
+    ・頂点バッファとインデックスバッファの作成
+    ・頂点データとインデックスデータの登録
+    ・シェーダーやテクスチャの設定
+    ・インデックスを使用した立方体の描画
 ==========================================================================*/
-
 
 #include <d3d11.h>
 
 #include "cube.h"
-
 #include <DirectXMath.h>
-#include"DirectXTex.h"
+#include "DirectXTex.h"
 #include "debug_ostream.h"
 #include "shader3d.h"
 #include "direct3d.h"
 #include "keyboard.h"
 #include "keylogger.h"
 #include "texture.h"
+
 using namespace DirectX;
 
-static constexpr int NUM_VERTEX = 4 * 6; // 頂点数
-static constexpr int NUM_INDEX = 36; // 頂点数
+// 立方体の頂点数。
+// 1面につき4頂点、6面で合計24頂点を使用する。
+static constexpr int NUM_VERTEX = 4 * 6;
 
-//static constexpr int NUM_VERTEX = 100; // 頂点数
-//static constexpr int NUM_VERTEX = 6*1; // 頂点数
+// 立方体のインデックス数。
+// 1面につき2つの三角形を使用し、合計12三角形を描画する。
+static constexpr int NUM_INDEX = 36;
 
-//9923.png
+// 立方体の描画に使用するインデックスバッファ
 static ID3D11Buffer* g_pIndexBuffer = nullptr;
-static ID3D11Buffer* g_pVertexBuffer = nullptr; // 頂点バッファ
-//2枚3枚使うときはこれを増やす
-//一個につき一枚
-//static ID3D11ShaderResourceView* g_pTexture = nullptr; // テクスチャビュー（必要なら追加）
 
+// 立方体の描画に使用する頂点バッファ
+static ID3D11Buffer* g_pVertexBuffer = nullptr;
 
-// 注意！初期化で外部から設定されるもの。Release不要。
+// 初期化時に外部から受け取るDirect3Dのデバイスとコンテキスト。
+// 外部で管理されているため、このファイルでは解放しない。
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pContext = nullptr;
 
 
-// 頂点構造体
+// 頂点データの構造体
 struct Vertex3d
 {
-	XMFLOAT3 position; // 頂点座標
-	XMFLOAT3 normal;   // 法線
-	XMFLOAT4 color;    // 頂点色
-	XMFLOAT2 texcoord; // テクスチャ座標（必要なら追加）
-
+    DirectX::XMFLOAT3 position; // 頂点の座標
+    DirectX::XMFLOAT3 normal;   // ライティング計算に使用する法線
+    DirectX::XMFLOAT4 color;    // 頂点の色
+    DirectX::XMFLOAT2 texcoord; // テクスチャを貼り付ける位置を示すUV座標
 };
 
 
-
+// アニメーションなどに使用する時間。
+// 現在のコードでは値を更新していない。
 float g_time = 0.0f;
 
 
+// 立方体の頂点データ。
+// 各面に4頂点を用意し、面ごとに法線とテクスチャ座標を設定する。
+// 立方体の中心を原点とし、各軸方向に-0.5～0.5の範囲で定義する。
 static Vertex3d g_CubeVertex[] =
 {
-	// 前面 (Z+)
-	{{-0.5f,  0.5f,  0.5f},{0.0f,0.0f,1.0f}, {1,1,1,1}, {0.000f, 0.000f}},
-	{{-0.5f, -0.5f,  0.5f},{0.0f,0.0f,1.0f}, {1,1,1,1}, {0.000f, 0.500f}},
-	{{ 0.5f, -0.5f,  0.5f},{0.0f,0.0f,1.0f}, {1,1,1,1}, {0.333f, 0.500f}},
-	{{ 0.5f,  0.5f,  0.5f},{0.0f,0.0f,1.0f}, {1,1,1,1}, {0.333f, 0.000f}},
+    // 前面（Z+）
+    {{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.000f, 0.000f}},
+    {{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.000f, 0.500f}},
+    {{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.333f, 0.500f}},
+    {{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.333f, 0.000f}},
 
-	// 背面 (Z-)
-	{{ 0.5f,  0.5f, -0.5f},{0.0f,0.0f,-1.0f}, {1,1,1,1}, {1.000f, 0.500f}},
-	{{ 0.5f, -0.5f, -0.5f},{0.0f,0.0f,-1.0f}, {1,1,1,1}, {1.000f, 1.000f}},
-	{{-0.5f, -0.5f, -0.5f},{0.0f,0.0f,-1.0f}, {1,1,1,1}, {0.667f, 1.000f}},
-	{{-0.5f,  0.5f, -0.5f},{0.0f,0.0f,-1.0f}, {1,1,1,1}, {0.667f, 0.500f}},
+    // 背面（Z-）
+    {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1,1,1,1}, {1.000f, 0.500f}},
+    {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1,1,1,1}, {1.000f, 1.000f}},
+    {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1,1,1,1}, {0.667f, 1.000f}},
+    {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1,1,1,1}, {0.667f, 0.500f}},
 
-	// 左面 (X-)
-	{{-0.5f,  0.5f, -0.5f},{-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.000f, 0.500f}},
-	{{-0.5f, -0.5f, -0.5f},{-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.000f, 1.000f}},
-	{{-0.5f, -0.5f,  0.5f},{-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.333f, 1.000f}},
-	{{-0.5f,  0.5f,  0.5f},{-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.333f, 0.500f}},
+    // 左面（X-）
+    {{-0.5f,  0.5f, -0.5f}, {-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.000f, 0.500f}},
+    {{-0.5f, -0.5f, -0.5f}, {-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.000f, 1.000f}},
+    {{-0.5f, -0.5f,  0.5f}, {-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.333f, 1.000f}},
+    {{-0.5f,  0.5f,  0.5f}, {-1.0f,0.0f,0.0f}, {1,1,1,1}, {0.333f, 0.500f}},
 
-	// 右面 (X+)
-	{{ 0.5f,  0.5f,  0.5f},{1.0f,0.0f,0.0f}, {1,1,1,1}, {0.667f, 0.000f}},
-	{{ 0.5f, -0.5f,  0.5f},{1.0f,0.0f,0.0f}, {1,1,1,1}, {0.667f, 0.500f}},
-	{{ 0.5f, -0.5f, -0.5f},{1.0f,0.0f,0.0f}, {1,1,1,1}, {1.000f, 0.500f}},
-	{{ 0.5f,  0.5f, -0.5f},{1.0f,0.0f,0.0f}, {1,1,1,1}, {1.000f, 0.000f}},
+    // 右面（X+）
+    {{ 0.5f,  0.5f,  0.5f}, {1.0f,0.0f,0.0f}, {1,1,1,1}, {0.667f, 0.000f}},
+    {{ 0.5f, -0.5f,  0.5f}, {1.0f,0.0f,0.0f}, {1,1,1,1}, {0.667f, 0.500f}},
+    {{ 0.5f, -0.5f, -0.5f}, {1.0f,0.0f,0.0f}, {1,1,1,1}, {1.000f, 0.500f}},
+    {{ 0.5f,  0.5f, -0.5f}, {1.0f,0.0f,0.0f}, {1,1,1,1}, {1.000f, 0.000f}},
 
-	// 上面 (Y+)
-	{{-0.5f,  0.5f, -0.5f},{0.0f,1.0f,0.0f}, {1,1,1,1}, {0.333f, 0.000f}},
-	{{-0.5f,  0.5f,  0.5f},{0.0f,1.0f,0.0f}, {1,1,1,1}, {0.333f, 0.500f}},
-	{{ 0.5f,  0.5f,  0.5f},{0.0f,1.0f,0.0f}, {1,1,1,1}, {0.667f, 0.500f}},
-	{{ 0.5f,  0.5f, -0.5f},{0.0f,1.0f,0.0f}, {1,1,1,1}, {0.667f, 0.000f}},
+    // 上面（Y+）
+    {{-0.5f,  0.5f, -0.5f}, {0.0f,1.0f,0.0f}, {1,1,1,1}, {0.333f, 0.000f}},
+    {{-0.5f,  0.5f,  0.5f}, {0.0f,1.0f,0.0f}, {1,1,1,1}, {0.333f, 0.500f}},
+    {{ 0.5f,  0.5f,  0.5f}, {0.0f,1.0f,0.0f}, {1,1,1,1}, {0.667f, 0.500f}},
+    {{ 0.5f,  0.5f, -0.5f}, {0.0f,1.0f,0.0f}, {1,1,1,1}, {0.667f, 0.000f}},
 
-	// 下面 (Y-)
-	{{-0.5f, -0.5f,  0.5f}, {0.0f,-1.0f,0.0f},{1,1,1,1}, {0.333f, 0.500f}},
-	{{-0.5f, -0.5f, -0.5f}, {0.0f,-1.0f,0.0f},{1,1,1,1}, {0.333f, 1.000f}},
-	{{ 0.5f, -0.5f, -0.5f}, {0.0f,-1.0f,0.0f},{1,1,1,1}, {0.667f, 1.000f}},
-	{{ 0.5f, -0.5f,  0.5f}, {0.0f,-1.0f,0.0f},{1,1,1,1}, {0.667f, 0.500f}},
+    // 下面（Y-）
+    {{-0.5f, -0.5f,  0.5f}, {0.0f,-1.0f,0.0f}, {1,1,1,1}, {0.333f, 0.500f}},
+    {{-0.5f, -0.5f, -0.5f}, {0.0f,-1.0f,0.0f}, {1,1,1,1}, {0.333f, 1.000f}},
+    {{ 0.5f, -0.5f, -0.5f}, {0.0f,-1.0f,0.0f}, {1,1,1,1}, {0.667f, 1.000f}},
+    {{ 0.5f, -0.5f,  0.5f}, {0.0f,-1.0f,0.0f}, {1,1,1,1}, {0.667f, 0.500f}},
 };
 
 
-
+// 頂点を参照するインデックスデータ。
+// 立方体の各面を2つの三角形に分割して描画する。
+// 1面につき6インデックス、6面で合計36インデックスを使用する。
 static unsigned short g_CubeIndex[] =
 {
-	// Front
-	0,1,2, 0,2,3,
-	// Back
-	4,5,6, 4,6,7,
-	// Left
-	8,9,10, 8,10,11,
-	// Right
-	12,13,14, 12,14,15,
-	// Top
-	16,17,18, 16,18,19,
-	// Bottom
-	20,21,22, 20,22,23,
+    // 前面
+    0, 1, 2, 0, 2, 3,
+
+    // 背面
+    4, 5, 6, 4, 6, 7,
+
+    // 左面
+    8, 9, 10, 8, 10, 11,
+
+    // 右面
+    12, 13, 14, 12, 14, 15,
+
+    // 上面
+    16, 17, 18, 16, 18, 19,
+
+    // 下面
+    20, 21, 22, 20, 22, 23,
 };
 
+
+// 立方体の描画に必要なリソースを初期化する
 void Cube_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    // 立方体の頂点・インデックスデータを作成し、Direct3Dバッファへ登録する。
-	//Cube01tex = Texture_Load(L"rom\\saikoro_image.png");
+    // デバイスとデバイスコンテキストが有効か確認する
+    if (!pDevice || !pContext)
+    {
+        hal::dout << "Cube_Initialize() : 与えられたデバイスかコンテキストが不正です";
+        return;
+    }
 
+    // 描画に使用するデバイスとコンテキストを保存する
+    // これらのリソース自体は外部で管理されている
+    g_pDevice = pDevice;
+    g_pContext = pContext;
 
-	// デバイスとデバイスコンテキストのチェック
-	if (!pDevice || !pContext) {
-		hal::dout << "Polygon_Initialize() : 与えられたデバイスかコンテキストが不正です";
-		return;
-	}
+    // 頂点バッファの設定情報を初期化する
+    D3D11_BUFFER_DESC bd{};
+    bd.Usage = D3D11_USAGE_DYNAMIC;                 // CPUから書き込み可能なバッファ
+    bd.ByteWidth = sizeof(Vertex3d) * NUM_VERTEX;   // 頂点データ全体のサイズ
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;        // 頂点バッファとして使用する
+    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;     // CPUからの書き込みを許可する
 
-	// デバイスとデバイスコンテキストの保存
-	g_pDevice = pDevice;
-	g_pContext = pContext;
+    // 初期データとして立方体の頂点データを指定する
+    D3D11_SUBRESOURCE_DATA sd{};
+    sd.pSysMem = g_CubeVertex;
 
-	// 頂点バッファ生成
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DYNAMIC;;
-	bd.ByteWidth = sizeof(Vertex3d) * NUM_VERTEX;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    // 頂点データを格納する頂点バッファを作成する
+    g_pDevice->CreateBuffer(&bd, &sd, &g_pVertexBuffer);
 
-	D3D11_SUBRESOURCE_DATA sd;
-	sd.pSysMem = g_CubeVertex;
+    // インデックスバッファ用に設定を変更する
+    bd.ByteWidth = sizeof(unsigned short) * NUM_INDEX;
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-	//頂点バッファへ流し込むデータの設計
+    // 初期データとしてインデックスデータを指定する
+    sd.pSysMem = g_CubeIndex;
 
-	g_pDevice->CreateBuffer(&bd, &sd, &g_pVertexBuffer);
-
-
-
-
-	bd.ByteWidth = sizeof(unsigned short) * NUM_INDEX;
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-
-	sd.pSysMem = g_CubeIndex;
-	g_pDevice->CreateBuffer(&bd, &sd, &g_pIndexBuffer);
-
-
+    // 頂点を参照するインデックスバッファを作成する
+    g_pDevice->CreateBuffer(&bd, &sd, &g_pIndexBuffer);
 }
 
+
+// 立方体が使用するDirect3Dリソースを解放する
 void Cube_Finalize()
 {
-	SAFE_RELEASE(g_pIndexBuffer);
-	SAFE_RELEASE(g_pVertexBuffer);
+    // インデックスバッファと頂点バッファを解放する
+    SAFE_RELEASE(g_pIndexBuffer);
+    SAFE_RELEASE(g_pVertexBuffer);
 
+    // 外部で管理されているデバイスとコンテキストは解放しない
+    g_pDevice = nullptr;
+    g_pContext = nullptr;
 }
-static XMVECTOR position{};
+
+
+// 立方体の更新処理
 void Cube_Update(double elapsedTime)
 {
-
+    // 現在は更新処理を行っていない
+    // 回転やアニメーションなどを追加する場合はここに記述する
 }
 
-//void Cube_Draw()
-//{
-//
-//	Shader3d_Begin();
-//	UINT stride = sizeof(Vertex3d);
-//	UINT offset = 0;
-//	g_pContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
-//
-//	const float SCREEN_WIDTH =  (float)Direct3D_GetBackBufferWidth();
-//	const float SCREEN_HEIGHT = (float)Direct3D_GetBackBufferHeight();
-//
-//	XMMATRIX scalingMatrix = XMMatrixScaling
-//	(camera.Scaling.x, camera.Scaling.y, camera.Scaling.z);
-//
-//	XMMATRIX translationMatrix = XMMatrixTranslation
-//	(camera.Position.x, camera.Position.y, camera.Position.z);
-//
-//	XMMATRIX RotationMatrix = XMMatrixRotationRollPitchYaw
-//	(XMConvertToRadians(camera.Rotation.x),
-//		XMConvertToRadians(camera.Rotation.y),
-//		XMConvertToRadians(camera.Rotation.z));
-//
-//	Shader3d_SetWorldMatrix(scalingMatrix * RotationMatrix * translationMatrix);
-//
-//
-//	//Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-//	XMVECTOR eye{ camera.posx, camera.posy, camera.posz }; // -5.0 は不要
-//	//camera.posz = 3.0f;
-//	XMVECTOR target{ camera.posx, camera.posy, camera.posz - 1.0f };
-//
-//
-//	XMVECTOR up{ 0.0f,1.0,0.0f };
-//	XMMATRIX mtxView = XMMatrixLookAtLH(eye, target, up);
-//	Shader3d_SetViewMatrix(mtxView);
-//	float w = static_cast<int>(Direct3D_GetBackBufferWidth());
-//	float h = static_cast<int>(Direct3D_GetBackBufferHeight());
-//	float aspect = (float)w / (float)h;
-//
-//	XMMATRIX mtxProj = XMMatrixPerspectiveFovLH(1.0f, aspect, 0.1f, 100.0f);
-//	Shader3d_SetProjectionMatrix(mtxProj);
-//
-//	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	//Tecture_SetTexture(texid);
-//	g_pContext->Draw(NUM_VERTEX, 0);
-//}
-void Cube_Draw(const XMMATRIX& mtxWorld,int texid)
+
+// 立方体を描画する
+void Cube_Draw(const XMMATRIX& mtxWorld, int texid)
 {
-    // 頂点とインデックスを描画パイプラインへ設定し、指定テクスチャで立方体を描画する。
-	// シェーダーを描画パイプラインに設定
-	Shader3d_Begin();
+    // 立方体を描画するためのシェーダーを設定する
+    Shader3d_Begin();
 
-	UINT stride = sizeof(Vertex3d);
-	UINT offset = 0;
-	g_pContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+    // 頂点バッファの1頂点あたりのサイズと開始位置を指定する
+    UINT stride = sizeof(Vertex3d);
+    UINT offset = 0;
 
+    // 描画パイプラインに頂点バッファを設定する
+    g_pContext->IASetVertexBuffers(
+        0,
+        1,
+        &g_pVertexBuffer,
+        &stride,
+        &offset
+    );
 
-	//頂点Indexを描画パイプラインに設定
+    // 描画パイプラインにインデックスバッファを設定する
+    // DXGI_FORMAT_R16_UINTは16ビット符号なし整数のインデックスを表す
+    g_pContext->IASetIndexBuffer(
+        g_pIndexBuffer,
+        DXGI_FORMAT_R16_UINT,
+        0
+    );
 
-	g_pContext->IASetIndexBuffer(g_pIndexBuffer,DXGI_FORMAT_R16_UINT,0);
+    // オブジェクトの位置・回転・拡大縮小を反映するワールド行列を設定する
+    // 実際に設定する行列は、呼び出し元から受け取ったmtxWorld
+    Shader3d_SetWorldMatrix(mtxWorld);
 
-	//ワールド変換座標の設定
+    // 頂点を三角形として描画する設定にする
+    g_pContext->IASetPrimitiveTopology(
+        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+    );
 
-	//パースペクティブ変換行列の設定
+    // 指定されたテクスチャを描画に使用する
+    Tecture_SetTexture(texid);
 
-	// 頂点シェーダーにworld変換行列を設定
-	//平行移動
-	XMMATRIX mtxT = XMMatrixTranslation(0.5f, 0.5f, 0.5f);
-	//XMMATRIX mtxT = XMMatrixTranslationFromVector(position);
+    // マテリアルの拡散反射色を白に設定する
+    // テクスチャ本来の色を反映させるための設定
+    Shader3d_SetMaterialDiffuse({ 1.0f, 1.0f, 1.0f, 1.0f });
 
-	//回転
-	XMMATRIX mtxR = XMMatrixRotationY(g_time);
-
-	//拡大
-	float s = sinf(g_time) + 1.0;
-	XMMATRIX mtxS = XMMatrixScaling(s, s, s);
-
-	Shader3d_SetWorldMatrix(mtxWorld); //合成したい順番で掛け算する
-
-
-	static float angle = 0.0f;
-	angle += 0.01f;
-	float radius = 5.0f;
-
-	//ビュー変換行列の設定
-	//XMVECTOR eye = {
-	//sinf(angle) * radius,  // X座標
-	//sinf(angle) * radius* 0.5,                  // 高さ（固定）
-	//cosf(angle) * radius   // Z座標
-	//};
-	//XMVECTOR eye{ 2.0f, 3.0f, -10.0f }; //カメラの位置
-	//XMVECTOR target{ 0.0f, 0.0f, 0.0f }; //注視点の位置
-	//XMVECTOR up{ 0.0f, 1.0f, 0.0f }; //カメラの上方向
-	//XMMATRIX mtxView = XMMatrixLookAtLH(eye, target, up);
-	//Shader3d_SetViewMatrix(mtxView);
-	//// 画面サイズの取得
-	//float w = static_cast<float>(Direct3D_GetBackBufferWidth());
-	//float h = static_cast<float>(Direct3D_GetBackBufferHeight());
-	//// 頂点シェーダーにプロジェクション変換行列を設定
-	//XMMATRIX mtxProj = XMMatrixPerspectiveFovLH(1.0f, w / h, 0.1f, 1000.0f);
-	//Shader3d_SetProjectionMatrix(mtxProj);
-
-	// プリミティブトポロジ設定
-	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Tecture_SetTexture(texid); // テクスチャの設定
-	Shader3d_SetMaterialDiffuse({ 1.0,1.0,1.0 ,1.0 });
-
-	// ポリゴン描画命令発行
-	//g_pContext->Draw(NUM_VERTEX, 0);
-	g_pContext->DrawIndexed(NUM_INDEX, 0, 0);
-
+    // インデックスバッファを使用して立方体を描画する
+    // 36個のインデックスから12個の三角形を描画する
+    g_pContext->DrawIndexed(NUM_INDEX, 0, 0);
 }
-
