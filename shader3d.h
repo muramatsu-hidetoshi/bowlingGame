@@ -18,7 +18,7 @@ void Shader3d_SetColor(const DirectX::XMFLOAT4& Color);
 void Shader3d_Begin();
 void Shader3d_SetMaterialDiffuse(const DirectX::XMFLOAT4& Color);
 
-// 追加：ピクセルシェーダーのディフューズ光を設定する関数
+// ピクセルシェーダーのディフューズ光を設定する関数
 void Shader3d_SetLightDiffuse(const DirectX::XMFLOAT4& diffuseColor, const DirectX::XMFLOAT4& worldDirection);
 
 #endif // SHADER_H

@@ -28,7 +28,7 @@ static AnimPattern* pAP=nullptr ;
 
 
 
-
+// スプライトシート内の指定パターンを描画する。
 void AnimPattern::Draw(float dx, float dy, float dw,float dh,int pattern_num, DirectX::XMFLOAT4 color)
 {
 
@@ -39,7 +39,7 @@ void AnimPattern::Draw(float dx, float dy, float dw,float dh,int pattern_num, Di
 		m_pattern_size.x, m_pattern_size.y,color); // スプライトの描画
 
 }
-
+// 3D空間内にビルボードとしてアニメーションパターンを描画する。
 void AnimPattern::BillboardDraw(
 	const DirectX::XMFLOAT3& position,
 	const DirectX::XMFLOAT2& scal,
@@ -78,7 +78,7 @@ void AnimPattern::BillboardDraw(
 
 
 }
-
+// 経過時間を加算し、指定時間ごとにアニメーションを進める。
 void AnimPatternPlayer::Update(double elapsed_time)
 {
     // 経過時間をフレーム時間へ加算し、必要な回数だけアニメーションを進める。
@@ -113,7 +113,7 @@ void AnimPatternPlayer::Update(double elapsed_time)
 
 
 }
-
+// 現在のアニメーションパターンを2Dスプライトとして描画する。
 void AnimPatternPlayer::Draw(float dx, float dy, float dw, float dh, DirectX::XMFLOAT4 color)
 {
 
@@ -121,7 +121,7 @@ void AnimPatternPlayer::Draw(float dx, float dy, float dw, float dh, DirectX::XM
 
 
 }
-
+// 現在のアニメーションパターンをビルボードとして描画する。
 void AnimPatternPlayer::BillboardDraw(
 	const DirectX::XMFLOAT3& position,
 	const DirectX::XMFLOAT2& scal,

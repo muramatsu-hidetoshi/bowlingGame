@@ -43,13 +43,13 @@ static ID3D11SamplerState* g_pSamplerState = nullptr; // ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg‚¢‚­‚
 // ’ˆÓI‰Šú‰»‚ÅŠO•”‚©‚çİ’è‚³‚ê‚é‚à‚ÌBRelease•s—vB
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pContext = nullptr;
-
+// ƒrƒ‹ƒ{[ƒh‚Ég—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ÌUV”ÍˆÍ‚ğ•\‚·\‘¢‘ÌB
 struct BillboardUV
 {
-	XMFLOAT2 offsett;
-    XMFLOAT2 size;
+	DirectX::XMFLOAT2 offsett; // ƒeƒNƒXƒ`ƒƒã‚ÌŠJnˆÊ’u
+	DirectX::XMFLOAT2 size;     // ƒeƒNƒXƒ`ƒƒã‚Ì”ÍˆÍ‚Ì‘å‚«‚³
 };
-
+// ƒrƒ‹ƒ{[ƒh•`‰æ‚É•K—v‚ÈƒVƒF[ƒ_[‚âƒoƒbƒtƒ@‚ğ‰Šú‰»‚·‚éB
 bool ShaderBillboard_Initialize()
 {
     // ƒrƒ‹ƒ{[ƒh•`‰æ—p‚ÌƒVƒF[ƒ_[‚Æ’è”ƒoƒbƒtƒ@‚ğ‰Šú‰»‚·‚éB
@@ -178,7 +178,7 @@ bool ShaderBillboard_Initialize()
 
 	return true;
 }
-
+// •`‰æ‚Ég—p‚µ‚½Direct3DƒŠƒ\[ƒX‚ğ‰ğ•ú‚·‚éB
 void ShaderBillboard_Finalize()
 {
     // ƒrƒ‹ƒ{[ƒh•`‰æ—pƒŠƒ\[ƒX‚ğ‰ğ•ú‚·‚éB
@@ -197,6 +197,7 @@ void ShaderBillboard_Finalize()
 }
 
 
+// ƒrƒ‹ƒ{[ƒh‚Ìƒ[ƒ‹ƒhs—ñ‚ğİ’è‚·‚éB
 
 void ShaderBillboard_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
 {
@@ -213,13 +214,15 @@ void ShaderBillboard_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
 
 }
 
+// ƒrƒ‹ƒ{[ƒh‚ÌF‚ğİ’è‚·‚éB
 void ShaderBillboard_SetColor(const DirectX::XMFLOAT4& Color)
 {
 
 	Direct3D_GetContext()->UpdateSubresource(g_pPSConstantBuffer0, 0, nullptr, &Color, 0, 0);
 
 }
-
+// ƒeƒNƒXƒ`ƒƒ‚Ìˆê•”•ª‚ğØ‚èo‚·‚½‚ß‚ÌUVî•ñ‚ğİ’è‚·‚éB
+// ƒXƒvƒ‰ƒCƒgƒV[ƒg‚©‚ç“Á’è‚ÌŠG‚ğ•\¦‚·‚é‚Æ‚«‚È‚Ç‚Ég—p‚·‚éB
 void ShaderBillboard_UV(const DirectX::XMFLOAT2& offset, const DirectX::XMFLOAT2& size)
 {
 	BillboardUV uv{ offset,size };
@@ -227,7 +230,7 @@ void ShaderBillboard_UV(const DirectX::XMFLOAT2& offset, const DirectX::XMFLOAT2
 
 
 }
-
+// ƒrƒ‹ƒ{[ƒh•`‰æ‚Ég—p‚·‚éƒVƒF[ƒ_[‚â’è”ƒoƒbƒtƒ@‚ğİ’è‚·‚éB
 void ShaderBillboard_Begin()
 {
     // ƒrƒ‹ƒ{[ƒh•`‰æ‚Ég‚¤ƒVƒF[ƒ_[‚Æ“ü—Íó‘Ô‚ğİ’è‚·‚éB

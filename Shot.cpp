@@ -57,16 +57,17 @@ static float g_ChargeRatio = 0.0f;   // 0～1
 static float g_ChargeDir = 1.0f;   // +1 or -1
 static constexpr float CHARGE_SPEED = 1.5f; // 往復スピード
 static float g_UIBlinkTime = 0.0f; // MAX時点滅用
-
+// 現在の投球パワーを取得する。
 float Shot_GetPower()
 {
     return g_Power;
 }
+// ボールが投げられた状態かを取得する。
 bool Shot_IsFired()
 {
     return g_State == ShotState::Fired;
 }
-
+// 投球方向とパワーから、投球速度ベクトルを求める。
 XMFLOAT3 Shot_GetShotVelocity()
 {
     return {
@@ -75,7 +76,7 @@ XMFLOAT3 Shot_GetShotVelocity()
         g_Front.z * g_Power
     };
 }
-
+// 投球パワーや狙い方向などを初期状態へ戻す。
 void Shot_ResetPower()
 {
     g_Power = 0.0f;
@@ -92,7 +93,7 @@ void Shot_ResetPower()
 
 
 
-
+// 投球に必要なモデルやテクスチャ、デバッグ表示を初期化する。
 void Shot_Initialize(const XMFLOAT3& position, const XMFLOAT3& front)
 {
     g_position = position;
@@ -116,12 +117,13 @@ void Shot_Initialize(const XMFLOAT3& position, const XMFLOAT3& front)
     g_scale = { 3,3,3 };
 }
 
+// 投球モデルなど、使用したリソースを解放する。
 void Shot_Finalize()
 {
     ModelRelease(g_Model);
 
 }
-
+// チャージ中、照準中、投球後の各状態に応じて処理する。
 void Shot_Update(double et)
 {
     POINT cur;
@@ -213,6 +215,7 @@ float Clamp(float v, float minV, float maxV)
     if (v > maxV) return maxV;
     return v;
 }
+// 照準中に矢印モデルを描画する。
 void Shot_Draw()
 {
 
@@ -267,6 +270,7 @@ bool Shot_IsCharging()
     return g_IsCharging;
 }
 
+// チャージ率に応じた円形ゲージと数値を表示する。
 void Shot_DrawUI()
 {
     if (g_State != ShotState::Charge &&
@@ -338,7 +342,7 @@ void Shot_DrawUI()
     g_DebugText->Draw();
 }
 
-
+// 投球済みの状態を呼び出し側が確認し、次のチャージ状態へ移行する。
 bool Shot_ConsumeFire()
 {
     if (g_State == ShotState::Fired)

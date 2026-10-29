@@ -132,7 +132,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 	Mouse_Initialize(hWnd);
-	MouseLogger_Initialize();   // ← 追加！
+	MouseLogger_Initialize();  
 
 	//Fade_StartIn(0.0f, false, { 0.0f,0.0f,0.0f,1.0f }); // フェードインを開始
 

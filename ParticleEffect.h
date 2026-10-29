@@ -1,12 +1,12 @@
+
+
+
 /*==========================================================================
+パーティクルエフェクトの設定と関数宣言 [particleEffect.h]
 
-パーティクルエフェクトシステム
-
-
----------------------------------------------------------------------------
-多数の粒子を使った派手なエフェクトシステム
-
-=========================================================================*/
+パーティクルの外観や動きを設定する構造体と、
+エフェクトの初期化・更新・描画・終了処理を宣言する。
+==========================================================================*/
 
 #pragma once
 
@@ -15,47 +15,47 @@
 // パーティクルエフェクトの設定
 struct ParticleEffectParams
 {
-    int textureId;                      // 使用するテクスチャID
-    DirectX::XMFLOAT4 startColor;       // 開始色
-    DirectX::XMFLOAT4 endColor;         // 終了色
+    int textureId;                       // 使用するテクスチャID
+    DirectX::XMFLOAT4 startColor;        // 開始時の色
+    DirectX::XMFLOAT4 endColor;          // 終了時の色
 
-    // パーティクル生成設定
-    int particleCount;                  // パーティクル数
-    float emitRadius;                   // 発生半径
-    float emitHeight;                   // 発生高さ範囲
+    // パーティクルの発生設定
+    int particleCount;                   // パーティクル数
+    float emitRadius;                    // 発生位置の半径
+    float emitHeight;                    // 上下方向の揺らぎの大きさ
 
-    // パーティクル動き設定
-    float horizontalSpeed;              // 水平回転速度
-    float verticalSpeed;                // 上昇速度
-    float verticalRange;                // 上下移動範囲
-    float particleScale;                // パーティクルサイズ
-    float randomness;                   // ランダム性 (0.0~1.0)
+    // パーティクルの移動設定
+    float horizontalSpeed;               // 水平方向の回転速度
+    float verticalSpeed;                 // 上昇運動の速度
+    float verticalRange;                 // 上下方向の移動範囲
+    float particleScale;                 // 基本サイズ
+    float randomness;                    // 動きに加えるランダム性（0.0～1.0）
 
-    // アニメーション設定
-    float rotationSpeed;                // 個別回転速度
-    float pulseSpeed;                   // 脈動速度
-    float pulseAmount;                  // 脈動の強さ
+    // パーティクルのアニメーション設定
+    float rotationSpeed;                 // 回転速度
+    float pulseSpeed;                    // 脈動の速度
+    float pulseAmount;                   // 脈動によるサイズ変化の強さ
 
-    bool useAdditiveBlend;              // 加算合成を使用
+    bool useAdditiveBlend;               // 加算合成を使用するかどうか
 };
 
-// デフォルト設定
+// デフォルト設定を取得する
 ParticleEffectParams ParticleEffect_GetDefaultParams();
 
-// 初期化・終了
+// 初期化・終了処理
 void ParticleEffect_Initialize();
 void ParticleEffect_Finalize();
 
-// 更新
+// 経過時間に基づいて更新する
 void ParticleEffect_Update(double elapsedTime);
 
-// 描画
+// 指定された設定とワールド行列を使って描画する
 void ParticleEffect_Draw(
     const ParticleEffectParams& params,
     const DirectX::XMMATRIX& mtxWorld
 );
 
-// プリセット
+// エフェクトの種類ごとの設定を取得する
 ParticleEffectParams ParticleEffect_PresetFire();       // 炎
 ParticleEffectParams ParticleEffect_PresetSpark();      // 火花
 ParticleEffectParams ParticleEffect_PresetMagic();      // 魔法

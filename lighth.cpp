@@ -1,16 +1,8 @@
 /*==========================================================================
-ライトの実装[light.cpp]
+ライトの実装 [light.cpp]
 
-
-
----------------------------------------------------------------------------
-
-
-
-
-
-
-=========================================================================*/
+環境光とディフューズライトの設定値を3Dシェーダーへ渡す。
+==========================================================================*/
 
 #include "lighth.h"
 #include "shader3d.h"
@@ -18,45 +10,62 @@
 
 using namespace DirectX;
 
-// 初期化：デフォルトの ambient / diffuse をシェーダへ設定
+// 初期化処理
 void Light_Initialize()
 {
-    // 3Dシェーダーで使うライト定数バッファを作成する。
-    // 適度なアンビエント（暗い場合はここを上げる）
+    // 環境光を設定する。値を大きくすると、全体が明るくなる
     Light_SetAmnient(XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f));
 
-    // ディフューズ方向光のデフォルト（上方から斜め下）
-    Light_SetDiffuse(XMFLOAT3(1.0f, 1.0f, 0.95f), XMFLOAT3(-0.5f, -1.0f, 0.5f));
+    // ディフューズライトを設定する
+    // 白に近い色を使用し、斜め上から照らすような方向を指定する
+    Light_SetDiffuse(
+        XMFLOAT3(1.0f, 1.0f, 0.95f),
+        XMFLOAT3(-0.5f, -1.0f, 0.5f));
 }
 
+// 終了処理
 void Light_Finalize()
 {
-    // 今はリソース無し。将来必要なら解放処理を追加。
+    // 現状では解放が必要なリソースはない
 }
 
-// アンビエント設定（シェーダの b0 に相当）
+// 環境光の設定
 void Light_SetAmnient(const DirectX::XMFLOAT4& color)
 {
-    // Shader3d_SetColor は PixelShader の b0（ambient_color）へ書き込む実装に合わせる
+    // 環境光の色を3Dシェーダーへ渡す
     Shader3d_SetColor(color);
 }
 
-// ディフューズ設定（色 + 方向）
-// direction はワールド空間のベクトル（正規化して渡す）
-void Light_SetDiffuse(const DirectX::XMFLOAT3& color, const DirectX::XMFLOAT3& direction)
+// ディフューズライトの設定
+// colorはライトの色、directionはワールド空間でのライトの方向を表す
+void Light_SetDiffuse(
+    const DirectX::XMFLOAT3& color,
+    const DirectX::XMFLOAT3& direction)
 {
-    // 正規化
+    // ライトの方向ベクトルをDirectXMathのベクトル形式に変換する
     XMVECTOR dirv = XMLoadFloat3(&direction);
+
+    // 方向ベクトルを正規化し、長さを1にする
     dirv = XMVector3Normalize(dirv);
+
+    // 正規化したベクトルをXMFLOAT3へ戻す
     XMFLOAT3 d3;
     XMStoreFloat3(&d3, dirv);
-    XMFLOAT4 worldDir(d3.x, d3.y, d3.z, 0.0f); // w は未使用なので 0
 
+    // ライトの方向をXMFLOAT4に変換する
+    // wには方向ベクトルであることを示す0を設定する
+    XMFLOAT4 worldDir(d3.x, d3.y, d3.z, 0.0f);
+
+    // ライトの色をXMFLOAT4に変換する
     XMFLOAT4 diffuseColor(color.x, color.y, color.z, 1.0f);
+
+    // ライトの色と方向を3Dシェーダーへ渡す
     Shader3d_SetLightDiffuse(diffuseColor, worldDir);
 }
 
+// 構造体を使ったディフューズライトの設定
 void Light_SetDiffuse(const DiffuseLight& light)
 {
+    // 構造体に格納されている色と方向を3Dシェーダーへ渡す
     Shader3d_SetLightDiffuse(light.color, light.direction);
 }

@@ -32,12 +32,19 @@ static ID3D11SamplerState* g_pSamplerState = nullptr; // ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg‚¢‚­‚
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pContext = nullptr;
 
+// ’¸“_ƒVƒF[ƒ_[F’¸“_À•W‚È‚Ç‚ğ•ÏŠ·‚·‚éˆ—‚ğ’S“–‚·‚éB
+// ƒsƒNƒZƒ‹ƒVƒF[ƒ_[FƒsƒNƒZƒ‹‚ÌF‚âŒõ‚ÌŒvZ‚ğ’S“–‚·‚éB
+// “ü—ÍƒŒƒCƒAƒEƒgF’¸“_ƒf[ƒ^‚ÌŠe—v‘f‚ÌŒ`®‚ğGPU‚É“`‚¦‚éB
+// ’è”ƒoƒbƒtƒ@Fs—ñ‚âFAŒõ‚Ìî•ñ‚È‚Ç‚ğƒVƒF[ƒ_[‚Ö“n‚·B
+
+// ƒfƒBƒtƒ…[ƒYŒõ‚Ìî•ñ‚ğŠi”[‚·‚é\‘¢‘Ì
 struct PS_CB1
 {
-	DirectX::XMFLOAT4 diffuse_color;
-	DirectX::XMFLOAT4 diffuse_world_vector;
+	DirectX::XMFLOAT4 diffuse_color;        // Œõ‚ÌF
+	DirectX::XMFLOAT4 diffuse_world_vector; // ƒ[ƒ‹ƒhÀ•WŒn‚Å‚ÌŒõ‚Ì•ûŒü
 };
 
+// ƒVƒF[ƒ_[‚â’è”ƒoƒbƒtƒ@‚È‚ÇA3D•`‰æ‚É•K—v‚ÈƒŠƒ\[ƒX‚ğ‰Šú‰»‚·‚éB
 bool Shader3d_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     // 3D•`‰æ—pƒVƒF[ƒ_[‚Æs—ñEƒ}ƒeƒŠƒAƒ‹—p’è”ƒoƒbƒtƒ@‚ğ€”õ‚·‚éB
@@ -197,7 +204,8 @@ void Shader3d_Finalize()
 }
 
 
-
+// ƒ[ƒ‹ƒhs—ñ‚ğ’è”ƒoƒbƒtƒ@‚Öİ’è‚·‚éB
+// “]’u‚µ‚Ä‚©‚çŠi”[‚·‚é‚±‚Æ‚ÅAƒVƒF[ƒ_[‘¤‚Ìs—ñ‚Ìˆµ‚¢‚É‡‚í‚¹‚éB
 void Shader3d_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
 {
 	// ’è”ƒoƒbƒtƒ@Ši”[—ps—ñ‚Ì\‘¢‘Ì‚ğ’è‹`
@@ -212,12 +220,12 @@ void Shader3d_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
 }
 
 
-
+// ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚É“n‚·F‚ğXV‚·‚éB
 void Shader3d_SetColor(const XMFLOAT4& Color)
 {
 	g_pContext->UpdateSubresource(g_pPSConstantBuffer, 0, nullptr, &Color, 0, 0);
 }
-
+// ƒVƒF[ƒ_[‚â’è”ƒoƒbƒtƒ@‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Öİ’è‚·‚éB
 void Shader3d_Begin()
 {
 	// ’¸“_ƒVƒF[ƒ_[‚ÆƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
@@ -243,7 +251,7 @@ void Shader3d_Begin()
 
 
 }
-
+// ƒ}ƒeƒŠƒAƒ‹‚ÌŠgU”½ËF‚ğİ’è‚·‚éB
 void Shader3d_SetMaterialDiffuse(const DirectX::XMFLOAT4& Color)
 {
 
@@ -253,7 +261,7 @@ void Shader3d_SetMaterialDiffuse(const DirectX::XMFLOAT4& Color)
 
 }
 
-// ’Ç‰ÁFƒfƒBƒtƒ…[ƒYŒõiF + ƒ[ƒ‹ƒh•ûŒüj‚ğƒsƒNƒZƒ‹ƒVƒF[ƒ_—p’è”ƒoƒbƒtƒ@(b1)‚Ö‘‚«‚Ş
+// Œõ‚ÌF‚Æ•ûŒü‚ğ‚Ü‚Æ‚ß‚Ä’è”ƒoƒbƒtƒ@‚Öİ’è‚·‚éB
 void Shader3d_SetLightDiffuse(const DirectX::XMFLOAT4& diffuseColor, const DirectX::XMFLOAT4& worldDirection)
 {
 	PS_CB1 cb{};

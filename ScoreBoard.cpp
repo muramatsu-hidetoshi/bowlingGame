@@ -1,12 +1,10 @@
-﻿/*==========================================================================
+﻿
+/*==============================================================================
+    スコアボードの管理 [scoreBoard.cpp]
 
-スコア表示（フレーム・投球毎）を管理 [ScoreBoard.cpp]
-
-
----------------------------------------------------------------------------
-
-
-==========================================================================*/
+    投球結果をフレームごとに記録し、数字やストライク・スペアの記号を
+    スコアボードへ描画する。
+==============================================================================*/
 
 #include "scoreBoard.h"
 #include "debug_text.h"
@@ -15,19 +13,24 @@
 #include "texture.h"
 #include "direct3d.h"
 
+// スコア情報を保持する
 Score score;
 
+// スコアボードと数字画像のテクスチャID
 static int g_ScoreBoardTexId = -1;
 static int g_NumberTexId = -1;
+
+// フレーム数と数字画像の表示設定
 static constexpr int FRAME_COUNT = 4;
 static constexpr float DIGIT_W = 64.0f;
 static constexpr float DIGIT_H = 64.0f;
 static constexpr int DIGIT_COLS = 5;
 static constexpr float CELL_W = 200.0f;
-static constexpr float CELL_H_NUM = 180.0f;   // 0〜9
-static constexpr float CELL_H_SYM = 185.0f;   // X / -
-constexpr float SCALE_THROW = 0.45f; // 上段（投球）
-constexpr float SCALE_SUM = 0.55f; // 下段（合計）
+static constexpr float CELL_H_NUM = 180.0f; // 数字0～9の画像の高さ
+static constexpr float CELL_H_SYM = 185.0f; // X・スペア記号の画像の高さ
+
+constexpr float SCALE_THROW = 0.45f;
+constexpr float SCALE_SUM = 0.55f;
 
 static constexpr int SHEET_COLS = 5;
 constexpr float startX = 0.0f;
@@ -36,8 +39,8 @@ constexpr float frameW = 430.0f / FRAME_COUNT;
 constexpr float throwSpacing = CELL_W * SCALE_THROW + 6.0f;
 constexpr float lowerRowHeight = CELL_H_NUM * SCALE_THROW + 10.0f;
 
-//constexpr float lowerRowHeight = 64.0f;
 
+// 数字画像内の表示記号を表す
 enum DigitSymbol
 {
     DIGIT_0 = 0,
@@ -50,62 +53,82 @@ enum DigitSymbol
     DIGIT_7,
     DIGIT_8,
     DIGIT_9,
-    SYMBOL_X,     // 10
-    SYMBOL_SPARE, // 11
-    SYMBOL_NONE,  // 12（空白）
+    SYMBOL_X,       // ストライク
+    SYMBOL_SPARE,   // スペア
+    SYMBOL_NONE,    // 空白
 };
 
+// 1フレーム分の投球情報
 struct Frame
 {
-    int throw1 = -1;
-    int throw2 = -1;
-    int frameScore = 0;
-
+    int throw1 = -1;    // 1投目。-1は未記録
+    int throw2 = -1;    // 2投目。-1は未記録
+    int frameScore = 0; // フレームの得点
 };
 
+// 各フレームの投球情報と現在の入力位置
 static Frame g_Frames[FRAME_COUNT];
 static int g_CurrentFrame = 0;
 static int g_CurrentThrow = 0;
 
+
+// スコアボードを初期化する
 void ScoreBoard_Initialize()
 {
+    // 表示に使用するテクスチャを読み込む
     g_ScoreBoardTexId = Texture_Load(L"rom\\Texture\\bord.jpg");
-    g_NumberTexId     = Texture_Load(L"rom\\Texture\\Number.png");
+    g_NumberTexId = Texture_Load(L"rom\\Texture\\Number.png");
+
+    // 全フレームの投球情報を初期状態に戻す
     for (int i = 0; i < FRAME_COUNT; ++i)
     {
         g_Frames[i] = {};
     }
+
+    // 1フレーム目の1投目から記録を開始する
     g_CurrentFrame = 0;
     g_CurrentThrow = 0;
+
+    // 合計得点を0に戻す
     score.SetTotalScore(0);
 }
 
+
+// 記号画像の縦方向の開始位置を取得する
 float GetSymbolSrcY(int symbol)
 {
-    if (symbol <= DIGIT_9)      return 0.0f;            // 0–9
-    else if (symbol <= SYMBOL_SPARE) return CELL_H_NUM * 2; // X /
-    else                         return CELL_H_NUM * 2; // 空白
+    if (symbol <= DIGIT_9)
+        return 0.0f; // 数字の行
+    else if (symbol <= SYMBOL_SPARE)
+        return CELL_H_NUM * 2; // X・スペア記号の行
+    else
+        return CELL_H_NUM * 2; // 空白の行
 }
+
+
+// 記号画像の高さを取得する
 float GetSymbolHeight(int symbol)
 {
-    if (symbol <= DIGIT_9) return CELL_H_NUM;
-    else                  return CELL_H_SYM;
+    if (symbol <= DIGIT_9)
+        return CELL_H_NUM;
+
+    return CELL_H_SYM;
 }
 
 
-void DrawSymbol(
-    int texId,
-    int symbol,
-    float x,
-    float y,
-    float scale
-)
+// 数字画像から指定した記号を切り出して描画する
+void DrawSymbol(int texId, int symbol, float x, float y, float scale)
 {
-    if (symbol < 0 || symbol == SYMBOL_NONE) return;
+    // 未設定の記号や空白は描画しない
+    if (symbol < 0 || symbol == SYMBOL_NONE)
+        return;
 
+    // 横方向の列番号を計算する
     int col = symbol % SHEET_COLS;
 
+    // 記号に応じて画像内の行を決定する
     int row = 0;
+
     if (symbol >= DIGIT_0 && symbol <= DIGIT_4)
     {
         row = 0;
@@ -123,9 +146,11 @@ void DrawSymbol(
         return;
     }
 
+    // 切り出す画像領域の位置と高さを計算する
     float srcY = row * CELL_H_NUM;
     float srcH = (row == 2) ? CELL_H_SYM : CELL_H_NUM;
 
+    // 指定した画像領域をスプライトとして描画する
     Sprite_Draw(
         texId,
         x,
@@ -136,142 +161,161 @@ void DrawSymbol(
         srcY,
         CELL_W,
         srcH,
-        { 0,0,0,1 }
+        { 0, 0, 0, 1 }
     );
 }
 
 
-Score *GetScore()
+// スコア情報へのポインタを取得する
+Score* GetScore()
 {
     return &score;
 }
 
+
+// 合計得点に指定された点数を加算する
 void ScoreSet(int a)
 {
     score.Totalscore += a;
 }
 
-// Score_AddThrow の堅牢化:
-// - pins を 0..10 にクランプ
-// - 2投目がフレーム合計で 10 を超えないように調整（物理的に発生するときの保険）
-// - 不整合が起きた場合、デバッグ出力で警告する
+
+// 投球結果を記録し、次の投球位置へ進める
 void Score_AddThrow(int pins)
 {
-    // 投球本数をフレームへ記録し、ストライクや2投目に応じて次の入力位置を進める。
-    // デバッグログ追加：Score_AddThrow に渡される値を確実に出力する
+    // 入力された値と現在の記録位置をデバッグ出力する
     hal::dout << "Score_AddThrow called: pins=" << pins
-              << " currentFrame=" << g_CurrentFrame
-              << " currentThrow=" << g_CurrentThrow << std::endl;
+        << " currentFrame=" << g_CurrentFrame
+        << " currentThrow=" << g_CurrentThrow << std::endl;
 
+    // すべてのフレームが記録済みなら処理しない
     if (g_CurrentFrame >= FRAME_COUNT)
         return;
 
-    // 基本的なクランプ
+    // 投球本数が不正な範囲にならないように補正する
     if (pins < 0) pins = 0;
+
     if (pins > 10) {
-        hal::dout << "  Warning: pins clamped from " << pins << " to 10" << std::endl;
+        hal::dout << "  Warning: pins clamped from "
+            << pins << " to 10" << std::endl;
         pins = 10;
     }
 
+    // 現在記録中のフレームを参照する
     Frame& f = g_Frames[g_CurrentFrame];
 
-    // 1投目
+    // 1投目の記録
     if (g_CurrentThrow == 0)
     {
         f.throw1 = pins;
 
-        // デバッグ：割り当て後の状態
-        hal::dout << "  Assigned throw1=" << f.throw1 << " (frame " << g_CurrentFrame << ")" << std::endl;
+        hal::dout << "  Assigned throw1=" << f.throw1
+            << " (frame " << g_CurrentFrame << ")" << std::endl;
 
-        // ストライクなら次フレーム（既存挙動）
+        // 10本倒した場合はストライクとして次のフレームへ進む
         if (pins == 10)
         {
-            // 明示的に throw2 は空のままにしておく
             f.throw2 = -1;
             g_CurrentFrame++;
             g_CurrentThrow = 0;
         }
         else
         {
+            // ストライクでなければ2投目を受け付ける
             g_CurrentThrow = 1;
         }
     }
-    // 2投目
+    // 2投目の記録
     else
     {
-        // 保険：1投目が既に記録されている前提で、合計が10を超えないようにする
+        // 1投目が未記録の場合は、不整合を防ぐため0として扱う
         if (f.throw1 < 0) {
-            // 想定外の状態だが保護する
-            hal::dout << "  Warning: throw1 was not set for frame " << g_CurrentFrame << std::endl;
+            hal::dout << "  Warning: throw1 was not set for frame "
+                << g_CurrentFrame << std::endl;
             f.throw1 = 0;
         }
 
+        // 1投目と2投目の合計が10本を超えないようにする
         int maxSecond = 10 - f.throw1;
+
         if (pins > maxSecond) {
-            hal::dout << "  Warning: second throw pins (" << pins << ") exceed frame limit, clamped to " << maxSecond << std::endl;
+            hal::dout << "  Warning: second throw pins (" << pins
+                << ") exceed frame limit, clamped to "
+                << maxSecond << std::endl;
             pins = maxSecond;
         }
 
         f.throw2 = pins;
 
-        hal::dout << "  Assigned throw2=" << f.throw2 << " (frame " << g_CurrentFrame << ")" << std::endl;
+        hal::dout << "  Assigned throw2=" << f.throw2
+            << " (frame " << g_CurrentFrame << ")" << std::endl;
 
+        // 2投目まで記録したら次のフレームへ進む
         g_CurrentFrame++;
         g_CurrentThrow = 0;
     }
+
+    // 今回の投球で倒した本数を合計得点へ加算する
     ScoreSet(pins);
 }
 
+
+// フレームごとの得点を再計算する
+// ※現状は未実装
 void Score_Recalculate()
 {
 }
 
+
+// スコアボードと各フレームの投球結果を描画する
 void ScoreBoard_Draw()
 {
-    // フレームごとの投球記号と合計点をスコアボードへ描画する。
-    // デバッグ：現在保持しているフレーム情報を毎フレーム出力（調査用）
 #ifdef _DEBUG
+    // デバッグ時は、各フレームの投球記録を出力する
     {
         std::ostringstream oss;
         oss << "ScoreBoard frames:";
+
         for (int i = 0; i < FRAME_COUNT; ++i) {
-            oss << " [" << i << "](" << g_Frames[i].throw1 << "," << g_Frames[i].throw2 << ")";
+            oss << " [" << i << "]("
+                << g_Frames[i].throw1 << ","
+                << g_Frames[i].throw2 << ")";
         }
+
         hal::dout << oss.str() << std::endl;
     }
 #endif // _DEBUG
 
-
-
+    // スコアボードの背景を描画する
     Sprite_Draw(
         g_ScoreBoardTexId,
         0.0f,
         230.0f, 145.0f,
         430.0f, 145.0f,
         0.0f, 0.0f,
-        430.0f, 145.0f);
+        430.0f, 145.0f
+    );
 
+    // 各フレーム内の数字の配置設定
     constexpr float startX = 0.0f;
     constexpr float startY = 100.0f;
     constexpr float frameW = 430.0f / FRAME_COUNT;
     constexpr float throwSpacing = 11.0f;
     constexpr float lowerRowHeight = 64.0f;
     constexpr float THROW_SCALE = 0.3f;
+
     float throwDigitW = CELL_W * THROW_SCALE;
 
+    // 全フレームを順番に描画する
     for (int i = 0; i < FRAME_COUNT; ++i)
     {
         const Frame& f = g_Frames[i];
         float frameX = startX + frameW * i;
 
-        // --- 1投目 ---
+        // 1投目の記号を描画する
         if (f.throw1 >= 0)
         {
-            int symbol =
-                (f.throw1 == 10) ? SYMBOL_X :
-                f.throw1;
-
-
+            int symbol = (f.throw1 == 10) ? SYMBOL_X : f.throw1;
 
             DrawSymbol(
                 g_NumberTexId,
@@ -280,14 +324,12 @@ void ScoreBoard_Draw()
                 startY,
                 0.3f
             );
-
-
-
         }
 
-        // --- 2投目 ---
+        // 2投目の記号を描画する
         if (f.throw2 >= 0)
         {
+            // 1投目と2投目の合計が10ならスペア記号を表示する
             int symbol =
                 (f.throw1 < 10 && f.throw1 + f.throw2 == 10)
                 ? SYMBOL_SPARE
@@ -302,7 +344,7 @@ void ScoreBoard_Draw()
             );
         }
 
-        // --- フレーム合計 ---
+        // 投球結果が記録されている場合、フレームの合計点を表示する
         if (f.throw1 >= 0)
         {
             int sum = f.throw1 + (f.throw2 >= 0 ? f.throw2 : 0);
@@ -310,7 +352,7 @@ void ScoreBoard_Draw()
             constexpr float SUM_SCALE = 0.32f;
             float digitW = CELL_W * SUM_SCALE;
 
-            // 10の位：10未満は表示しない（現在は先頭に不要な 0 が出ていたため）
+            // 10以上の場合だけ、10の位を描画する
             if (sum >= 10)
             {
                 DrawSymbol(
@@ -322,7 +364,7 @@ void ScoreBoard_Draw()
                 );
             }
 
-            // 1の位（常に表示）
+            // 1の位を描画する
             DrawSymbol(
                 g_NumberTexId,
                 sum % 10,
@@ -331,10 +373,6 @@ void ScoreBoard_Draw()
                 SUM_SCALE
             );
         }
-
     }
 }
-
-
-
 
