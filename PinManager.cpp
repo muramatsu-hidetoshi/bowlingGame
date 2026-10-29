@@ -41,11 +41,11 @@ void PinManager::Draw()
 // ピンの物理更新と衝突判定を行う。
 void PinManager::Update(float dt, BowlingBall& ball)
 {
-    // ① すべてのピンの位置・速度・回転などを更新する。
+    //すべてのピンの位置・速度・回転などを更新する。
     for (auto& p : m_pins)
         p.Update(dt);
 
-    // ② ボールとピンの衝突判定を行う。
+    //ボールとピンの衝突判定を行う。
     for (auto& p : m_pins)
     {
         // 倒れたピンはボールとの衝突判定を行わない。
@@ -61,7 +61,7 @@ void PinManager::Update(float dt, BowlingBall& ball)
         ResolveBallPinHit(ball, p);
     }
 
-    // ③ ピン同士の衝突判定を行う。
+    // ピン同士の衝突判定を行う。
     // 同じ組み合わせを2回処理しないよう、jはi+1から開始する。
     for (size_t i = 0; i < m_pins.size(); ++i)
     {
