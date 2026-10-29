@@ -1,4 +1,4 @@
-#include "UI.h"
+#include "ui.h"
 #include "sprite.h"
 #include "texture.h"
 #include <algorithm>

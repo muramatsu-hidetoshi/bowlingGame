@@ -46,7 +46,7 @@
 #include "debug_ostream.h"
 #include "trailExplosion.h"
 #include "directionCamera.h"
-#include "UI.h"
+#include "ui.h"
 #include "audio.h"
 using namespace DirectX;
 

@@ -39,14 +39,6 @@ void UninitAudio()
 	g_Xaudio->Release();
 }
 
-
-
-
-
-
-
-
-
 struct AUDIO
 {
 	IXAudio2SourceVoice*	SourceVoice{};
